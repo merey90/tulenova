@@ -1,0 +1,9 @@
+@import './assets/styles/variables';
+
+.App {
+  text-align: center;
+  background-image: url('/images/spiral.svg');
+  background-size: 5px 5px;
+  background-color: $primary-color-dark;
+  min-height: 100vh;
+}
