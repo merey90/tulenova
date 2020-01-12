@@ -1,12 +1,21 @@
+import React from 'react';
+import HomeComponent from './../../home/home';
+import BioComponent from './../../bio/bio';
+import ContactComponent from '../../contact/contact';
+
 export interface IRoute {
   title: string;
   url: string;
   disabled?: boolean;
+  exact?: boolean;
+  component: React.FC;
 }
 
 export const Home: IRoute = {
   title: 'Home',
-  url: '/',
+  url: '/home',
+  exact: true,
+  component: HomeComponent,
 };
 
 /**
@@ -16,11 +25,13 @@ export const Portfolio: IRoute = {
   title: 'Portfolio',
   url: '/portfolio',
   disabled: true,
+  component: HomeComponent,
 };
 
 export const Bio: IRoute = {
   title: 'Bio',
   url: '/bio',
+  component: BioComponent,
 };
 
 /**
@@ -30,12 +41,14 @@ export const Library: IRoute = {
   title: 'Library',
   url: '/library',
   disabled: true,
+  component: HomeComponent,
 };
 
 export const Calendar: IRoute = {
   title: 'Calendar',
   url: '/calendar',
   disabled: true,
+  component: HomeComponent,
 };
 
 /**
@@ -45,14 +58,16 @@ export const Gallery: IRoute = {
   title: 'Gallery',
   url: '/gallery',
   disabled: true,
+  component: HomeComponent,
 };
 
 export const Contact: IRoute = {
   title: 'Contact',
   url: '/contact',
+  component: ContactComponent,
 };
 
-export const routes = [
+export const Routes = [
   Home,
   // Portfolio,
   Bio,
@@ -61,3 +76,5 @@ export const routes = [
   // Gallery,
   Contact,
 ];
+
+export default Routes;

@@ -1,21 +1,27 @@
 import React from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
+
 import './App.scss';
+
 import Header from './components/header/header';
-import { Route } from 'react-router-dom';
-import Home from './home/home';
-import Bio from './bio/bio';
+import Routes, { Home, IRoute } from './components/header/routes';
 
 const App: React.FC = () => {
+  const renderRoutes = (route: IRoute) => (
+    <Route
+      key={route.url}
+      path={route.url}
+      children={route.component}
+      exact={route.exact}
+    />
+  );
+
   return (
     <div className="App">
       <Header />
       <main className="App-main">
-        <Route path="/bio">
-          <Bio />
-        </Route>
-        <Route exact path="/">
-          <Home />
-        </Route>
+        <Switch>{Routes.map(renderRoutes)}</Switch>
+        <Redirect to={Home.url} />
       </main>
     </div>
   );

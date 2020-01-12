@@ -2,15 +2,14 @@ import * as React from 'react';
 import { AppBar, Typography, Toolbar, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
-
 import Container from '@material-ui/core/Container';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import Hidden from '@material-ui/core/Hidden';
+import Zoom from '@material-ui/core/Zoom';
 
 import './header.scss';
 
 import Navigation from './navigation';
-import Zoom from '@material-ui/core/Zoom';
 
 export const Header: React.FC = () => {
   const [isDrawerOpen, setDrawerState] = React.useState(false);
@@ -37,6 +36,11 @@ export const Header: React.FC = () => {
                 </Zoom>
               </IconButton>
             </Hidden>
+            <img
+              className="header-logo"
+              src={`${process.env.PUBLIC_URL}/header-logo.png`}
+              alt="Header-logo"
+            />
             <Typography variant="h6" className="header-typo">
               Meruyert Tulenova
             </Typography>

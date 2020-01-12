@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Button from '@material-ui/core/Button';
 import { Link, useHistory } from 'react-router-dom';
-import { routes, IRoute } from './routes';
+import { Routes, IRoute } from './routes';
 
 export interface INavigation {
   handleClose: () => void;
@@ -24,7 +24,7 @@ export const Navigation: React.FC<INavigation> = ({ handleClose }) => {
     </Button>
   );
 
-  return <>{routes.map(renderLink)}</>;
+  return <>{Routes.map(renderLink)}</>;
 };
 
 export default Navigation;
