@@ -1,38 +1,30 @@
 import * as React from 'react';
 import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { routes, IRoute } from './routes';
 
 export interface INavigation {
   handleClose: () => void;
 }
 
-export const Navigation: React.FC<INavigation> = ({ handleClose }) => (
-  <>
-    <Button color="inherit" to="/" component={Link} onClick={handleClose}>
-      Home
-    </Button>
-    <Button color="inherit" to="/bio" component={Link} onClick={handleClose}>
-      Bio
-    </Button>
+export const Navigation: React.FC<INavigation> = ({ handleClose }) => {
+  const {
+    location: { pathname },
+  } = useHistory();
+  const renderLink = ({ title, url, disabled }: IRoute) => (
     <Button
-      color="inherit"
-      to="/"
-      disabled
+      key={title}
+      color={pathname === url ? 'secondary' : 'inherit'}
+      to={url}
       component={Link}
-      title="Under construction"
+      disabled={disabled}
+      onClick={handleClose}
     >
-      Downloads
+      {title}
     </Button>
-    <Button color="inherit" to="/" disabled component={Link}>
-      Calendar
-    </Button>
-    <Button color="inherit" to="/" disabled component={Link}>
-      Gallery
-    </Button>
-    <Button color="inherit" to="/" disabled component={Link}>
-      Contact
-    </Button>
-  </>
-);
+  );
+
+  return <>{routes.map(renderLink)}</>;
+};
 
 export default Navigation;

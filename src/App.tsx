@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.scss';
 import Header from './components/header/header';
-import Footer from './components/footer/footer';
 import { Route } from 'react-router-dom';
 import Home from './home/home';
 import Bio from './bio/bio';
@@ -18,7 +17,6 @@ const App: React.FC = () => {
           <Home />
         </Route>
       </main>
-      <Footer />
     </div>
   );
 };
