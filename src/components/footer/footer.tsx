@@ -7,7 +7,7 @@ import './footer.scss';
 export const Footer: React.FC = () => (
   <footer className="footer">
     <Container>
-      <Typography variant="body2">Copyright 2020</Typography>
+      <Typography variant="body2">© Copyright 2020</Typography>
     </Container>
   </footer>
 );

@@ -1,5 +1,20 @@
 .header {
+  z-index: 1301 !important;
   &-typo {
     flex-grow: 1;
   }
+  .menu-button {
+    .MuiIconButton-label {
+      .MuiSvgIcon-root {
+        position: absolute;
+      }
+    }
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  padding-top: 60px;
 }

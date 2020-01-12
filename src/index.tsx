@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+
 import './index.scss';
+
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import CssBaseline from '@material-ui/core/CssBaseline';
-
 import {
   createMuiTheme,
   responsiveFontSizes,
@@ -15,7 +17,7 @@ let theme = createMuiTheme({
   palette: {
     primary: {
       light: '#6d6d6d',
-      main: '#424242',
+      main: '#000',
       dark: '#1b1b1b',
       contrastText: '#fff',
     },
@@ -33,7 +35,9 @@ theme = responsiveFontSizes(theme);
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </ThemeProvider>,
   document.getElementById('root')
 );
