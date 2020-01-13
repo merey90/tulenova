@@ -20,8 +20,10 @@ const App: React.FC = () => {
     <div className="App">
       <Header />
       <main className="App-main">
-        <Switch>{Routes.map(renderRoutes)}</Switch>
-        <Redirect to={Home.url} />
+        <Switch>
+          {Routes.map(renderRoutes)}
+          <Redirect to={Home.url} />
+        </Switch>
       </main>
     </div>
   );
