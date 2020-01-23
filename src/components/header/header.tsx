@@ -10,6 +10,8 @@ import Zoom from '@material-ui/core/Zoom';
 import './header.scss';
 
 import Navigation from './navigation';
+import { Link } from 'react-router-dom';
+import { Home } from '../routing/routes';
 
 export const Header: React.FC = () => {
   const [isDrawerOpen, setDrawerState] = React.useState(false);
@@ -36,11 +38,13 @@ export const Header: React.FC = () => {
                 </Zoom>
               </IconButton>
             </Hidden>
-            <img
-              className="header-logo"
-              src={`${process.env.PUBLIC_URL}/header-logo.png`}
-              alt="Header-logo"
-            />
+            <Link to={Home.path}>
+              <img
+                className="header-logo"
+                src={`${process.env.PUBLIC_URL}/header-logo.png`}
+                alt="Header-logo"
+              />
+            </Link>
             <Typography variant="h6" className="header-typo">
               Meruyert Tulenova
             </Typography>
