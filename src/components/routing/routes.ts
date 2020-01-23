@@ -1,11 +1,11 @@
 import React from 'react';
-import HomeComponent from './../../home/home';
-import BioComponent from './../../bio/bio';
+import HomeComponent from '../../home/home';
+import BioComponent from '../../bio/bio';
 import ContactComponent from '../../contact/contact';
 
 export interface IRoute {
   title: string;
-  url: string;
+  path: string;
   disabled?: boolean;
   exact?: boolean;
   component: React.FC;
@@ -13,7 +13,7 @@ export interface IRoute {
 
 export const Home: IRoute = {
   title: 'Home',
-  url: '/home',
+  path: '/home',
   exact: true,
   component: HomeComponent,
 };
@@ -23,14 +23,14 @@ export const Home: IRoute = {
  */
 export const Portfolio: IRoute = {
   title: 'Portfolio',
-  url: '/portfolio',
+  path: '/portfolio',
   disabled: true,
   component: HomeComponent,
 };
 
 export const Bio: IRoute = {
   title: 'Bio',
-  url: '/bio',
+  path: '/bio',
   component: BioComponent,
 };
 
@@ -39,14 +39,14 @@ export const Bio: IRoute = {
  */
 export const Library: IRoute = {
   title: 'Library',
-  url: '/library',
+  path: '/library',
   disabled: true,
   component: HomeComponent,
 };
 
 export const Calendar: IRoute = {
   title: 'Calendar',
-  url: '/calendar',
+  path: '/calendar',
   disabled: true,
   component: HomeComponent,
 };
@@ -56,14 +56,14 @@ export const Calendar: IRoute = {
  */
 export const Gallery: IRoute = {
   title: 'Gallery',
-  url: '/gallery',
+  path: '/gallery',
   disabled: true,
   component: HomeComponent,
 };
 
 export const Contact: IRoute = {
   title: 'Contact',
-  url: '/contact',
+  path: '/contact',
   component: ContactComponent,
 };
 
