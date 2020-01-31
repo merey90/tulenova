@@ -1,8 +1,12 @@
+@import '../assets/styles/variables';
+
 .home-container {
-  background-image: url('/background.jpg');
+  background-image: url('#{$assets-path}/background.jpg');
   background-repeat: no-repeat;
   background-color: black;
   background-size: cover;
   background-position-x: 55%;
   flex-grow: 1;
 }
+
+$primary-color: red;

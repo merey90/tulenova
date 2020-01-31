@@ -46,7 +46,7 @@ export const Header: React.FC = () => {
               />
             </Link>
             <Typography variant="h6" className="header-typo">
-              Meruyert Tulenova
+              Mira Tulenova
             </Typography>
             <Hidden xsDown>
               <Navigation handleClose={closeDrawer} />
