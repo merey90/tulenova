@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-
-import './index.scss';
-
-import App from './App';
-import * as serviceWorker from './serviceWorker';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   createMuiTheme,
   responsiveFontSizes,
   ThemeProvider,
 } from '@material-ui/core/styles';
+
+import './index.scss';
+
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+import Firebase from './firebase';
+
+Firebase.init();
 
 let theme = createMuiTheme({
   palette: {
