@@ -7,7 +7,6 @@ import {
   CardContent,
   Typography,
   Grid,
-  Link,
 } from '@material-ui/core';
 
 import './contact.scss';
@@ -23,7 +22,11 @@ export const Contact: React.FC = () => (
             </Grid>
             <Grid item className="contact-right" xs={6}>
               <Typography variant="body1">
-                <a href="mailto:miratulenova@gmail.com" target="_blank">
+                <a
+                  href="mailto:miratulenova@gmail.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   miratulenova@gmail.com
                 </a>
               </Typography>
