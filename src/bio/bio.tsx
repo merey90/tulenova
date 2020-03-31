@@ -1,13 +1,13 @@
 import * as React from 'react';
 import Container from '@material-ui/core/Container';
-import { Paper } from '@material-ui/core';
+import { Paper, Box } from '@material-ui/core';
 import { ASSETS_PATH } from '../assets/constants';
 
 export const Bio: React.FC = () => {
   const imageSrc = `${ASSETS_PATH}/bio.jpg`;
   return (
     <Container maxWidth="md" className="Bio-container">
-      <Paper>
+      <Box component={Paper} p={2}>
         <img src={imageSrc} alt="Bio" width="400px" />
         <p>
           Meruyert Tulenova was born in Almaty, Kazakhstan. She started her
@@ -32,7 +32,7 @@ export const Bio: React.FC = () => {
           prizes at international competitions in Romania, Hungary, Russia and
           Kazakhstan.
         </p>
-      </Paper>
+      </Box>
     </Container>
   );
 };
