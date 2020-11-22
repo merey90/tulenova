@@ -2,6 +2,7 @@ import React from 'react';
 import HomeComponent from '../../home/home';
 import BioComponent from '../../bio/bio';
 import ContactComponent from '../../contact/contact';
+import { Gallery as GalleryComponent } from '../../gallery';
 
 export interface IRoute {
   title: string;
@@ -29,7 +30,7 @@ export const Portfolio: IRoute = {
 };
 
 export const Bio: IRoute = {
-  title: 'Bio',
+  title: 'Biography',
   path: '/bio',
   component: BioComponent,
 };
@@ -58,7 +59,7 @@ export const Gallery: IRoute = {
   title: 'Gallery',
   path: '/gallery',
   disabled: true,
-  component: HomeComponent,
+  component: GalleryComponent,
 };
 
 export const Contact: IRoute = {

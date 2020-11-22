@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Button from '@material-ui/core/Button';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Routes, IRoute } from '../routing/routes';
 
 export interface INavigation {
@@ -8,9 +8,7 @@ export interface INavigation {
 }
 
 export const Navigation: React.FC<INavigation> = ({ handleClose }) => {
-  const {
-    location: { pathname },
-  } = useHistory();
+  const { pathname } = useLocation();
   const renderLink = ({ title, path, disabled }: IRoute) => (
     <Button
       key={title}
