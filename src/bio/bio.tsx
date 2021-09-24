@@ -25,7 +25,7 @@ export const Bio: React.FC = () => {
           Scholarship for her outstanding achievements.
         </p>
         <p>
-          She is currently studying flute at the academy of music Hanns Eisler
+          She is currently studying at the academy of music Hanns Eisler
           in Berlin. She is participating in master classes and concerts, both
           as a soloist and as a member of the ensemble. Meruyert Tulenova is a
           member of the ensemble for contemporary music EEGERU. She has won
