@@ -17,10 +17,10 @@ export const Contact: React.FC = () => (
       <Card variant="outlined">
         <CardContent>
           <Grid container>
-            <Grid item className="contact-left" xs={6}>
+            <Grid item className="contact-left" xs={4} sm={6}>
               <Typography variant="body1">Email</Typography>
             </Grid>
-            <Grid item className="contact-right" xs={6}>
+            <Grid item className="contact-right" xs={8}sm={6}>
               <Typography variant="body1">
                 <a
                   href="mailto:miratulenova@gmail.com"
@@ -33,10 +33,10 @@ export const Contact: React.FC = () => (
             </Grid>
           </Grid>
           <Grid container>
-            <Grid item className="contact-left" xs={6}>
+            <Grid item className="contact-left" xs={4}sm={6}>
               <Typography variant="body1">Phone</Typography>
             </Grid>
-            <Grid item className="contact-right" xs={6}>
+            <Grid item className="contact-right" xs={8}sm={6}>
               <Typography variant="body1">
                 <a href="tel:0176-6868-1229">+49 176 6868 1229</a>
               </Typography>
