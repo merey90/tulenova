@@ -3,12 +3,14 @@ import Container from '@material-ui/core/Container';
 import { Paper, Box } from '@material-ui/core';
 import { ASSETS_PATH } from '../assets/constants';
 
+import './bio.scss';
+
 export const Bio: React.FC = () => {
   const imageSrc = `${ASSETS_PATH}/bio.jpg`;
   return (
     <Container maxWidth="md" className="Bio-container">
       <Box component={Paper} p={2}>
-        <img src={imageSrc} alt="Bio" width="400px" />
+        <img src={imageSrc} alt="Bio" className="bio-image" />
         <p>
           Meruyert Tulenova was born in Almaty, Kazakhstan. She started her
           musical education at the age of six at the Akhmet Jubanov School of
