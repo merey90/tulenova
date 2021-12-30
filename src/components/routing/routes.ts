@@ -1,7 +1,6 @@
 import React from 'react';
 import HomeComponent from '../../home/home';
 import BioComponent from '../../bio/bio';
-import ContactComponent from '../../contact/contact';
 import { Gallery as GalleryComponent } from '../../gallery';
 
 export interface IRoute {
@@ -20,32 +19,32 @@ export const Home: IRoute = {
 /**
  * Audio and video recordings, related news
  */
-export const Portfolio: IRoute = {
-  title: 'Portfolio',
-  path: '/portfolio',
+export const News: IRoute = {
+  title: 'News',
+  path: '/news',
   disabled: true,
   component: HomeComponent,
 };
 
-export const Bio: IRoute = {
-  title: 'Biography',
-  path: '/bio',
+export const About: IRoute = {
+  title: 'About',
+  path: '/about',
   component: BioComponent,
 };
 
 /**
  * Music sheet shop
  */
-export const Library: IRoute = {
-  title: 'Library',
-  path: '/library',
+export const Schedule: IRoute = {
+  title: 'Schedule',
+  path: '/schedule',
   disabled: true,
   component: HomeComponent,
 };
 
-export const Calendar: IRoute = {
-  title: 'Calendar',
-  path: '/calendar',
+export const Media: IRoute = {
+  title: 'Media',
+  path: '/media',
   disabled: true,
   component: HomeComponent,
 };
@@ -60,18 +59,11 @@ export const Gallery: IRoute = {
   component: GalleryComponent,
 };
 
-export const Contact: IRoute = {
-  title: 'Contact',
-  path: '/contact',
-  component: ContactComponent,
-};
-
 export const MyRoutes = [
   Home,
   // Portfolio,
-  Bio,
+  About,
   // Library,
   // Calendar,
   // Gallery,
-  Contact,
 ];

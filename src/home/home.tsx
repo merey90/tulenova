@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import './home.scss';
 
-export const Home: React.FC = () => (
-  <div className="home-container"></div>
-);
+export const Home: React.FC = () => <div className="home-container"></div>;
 
 export default Home;

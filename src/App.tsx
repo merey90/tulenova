@@ -1,5 +1,5 @@
 import React from 'react';
-import {Routes } from 'react-router-dom';
+import { Routes } from 'react-router-dom';
 
 import './App.scss';
 
@@ -12,9 +12,7 @@ const App: React.FC = () => {
     <div className="App">
       <Header />
       <main className="App-main">
-        <Routes>
-          {MyRoutes.map(Routing)}
-        </Routes>
+        <Routes>{MyRoutes.map(Routing)}</Routes>
       </main>
     </div>
   );

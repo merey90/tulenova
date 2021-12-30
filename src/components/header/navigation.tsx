@@ -1,6 +1,6 @@
 import * as React from 'react';
-import Button from '@material-ui/core/Button';
 import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 import { MyRoutes, IRoute } from '../routing/routes';
 
 export interface INavigation {

@@ -1,11 +1,7 @@
 import * as React from 'react';
-import { AppBar, Typography, Toolbar, IconButton } from '@material-ui/core';
+import { AppBar, Typography, Toolbar, IconButton, Container, Hidden, Zoom, SwipeableDrawer } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
-import Container from '@material-ui/core/Container';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Hidden from '@material-ui/core/Hidden';
-import Zoom from '@material-ui/core/Zoom';
 
 import './header.scss';
 
@@ -39,11 +35,7 @@ export const Header: React.FC = () => {
               </IconButton>
             </Hidden>
             <Link to={Home.path}>
-              <img
-                className="header-logo"
-                src={`${process.env.PUBLIC_URL}/header-logo.png`}
-                alt="Header-logo"
-              />
+              <img className="header-logo" src={`${process.env.PUBLIC_URL}/header-logo.png`} alt="Header-logo" />
             </Link>
             <Typography variant="h6" className="header-typo">
               Meruyert Tulenova
@@ -54,11 +46,8 @@ export const Header: React.FC = () => {
           </Toolbar>
         </Container>
       </AppBar>
-      <SwipeableDrawer
-        open={isDrawerOpen}
-        onClose={closeDrawer}
-        onOpen={() => {}}
-      >
+      {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+      <SwipeableDrawer open={isDrawerOpen} onClose={closeDrawer} onOpen={() => {}}>
         <div className="sidebar">
           <Navigation handleClose={closeDrawer} />
         </div>
