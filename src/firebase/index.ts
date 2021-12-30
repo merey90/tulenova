@@ -1,5 +1,5 @@
-import firebase from 'firebase/app';
-import 'firebase/analytics';
+import  { FirebaseApp, initializeApp } from 'firebase/app';
+import { getAnalytics, Analytics, logEvent  } from 'firebase/analytics';
 
 import { IFirebaseConfigs } from './types';
 
@@ -29,21 +29,19 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 class Firebase {
-  firebaseApp: firebase.app.App;
-  analytics?: firebase.analytics.Analytics;
+  firebaseApp: FirebaseApp;
+  analytics: Analytics | undefined;
 
   constructor() {
-    this.firebaseApp = !firebase.apps.length
-      ? firebase.initializeApp(firebaseConfig)
-      : firebase.app();
+    this.firebaseApp ??= initializeApp(firebaseConfig)
   }
 
   init() {
-    this.analytics = this.firebaseApp.analytics();
+    this.analytics = getAnalytics();
   }
 
-  killFirebase() {
-    this.firebaseApp.delete();
+  log(message: string, params: {}) {
+    !!this.analytics && logEvent(this.analytics, message, params)
   }
 }
 

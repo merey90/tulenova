@@ -1,10 +1,10 @@
-@import './assets/styles/variables';
+@use './assets/styles/variables';
 
 .App {
   text-align: center;
   background-image: url('/spiral.svg');
   background-size: 5px 5px;
-  background-color: $primary-color-dark;
+  background-color: variables.$primary-color-dark;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -14,7 +14,7 @@
     flex-direction: column;
   }
   &-container {
-    background-color: $primary-color-light;
+    background-color: variables.$primary-color-light;
     flex-grow: 1;
   }
 }

@@ -9,7 +9,6 @@ const Routing: React.FC<IProps> = ({
   title,
   component: Component,
   path,
-  exact,
 }) => {
   const eComponent = (
     <>
@@ -17,7 +16,7 @@ const Routing: React.FC<IProps> = ({
       <Component />
     </>
   );
-  return <Route exact={exact} path={path} key={path} children={eComponent} />;
+  return <Route path={path} key={path} element={eComponent} />;
 };
 
 export default Routing;

@@ -8,14 +8,12 @@ export interface IRoute {
   title: string;
   path: string;
   disabled?: boolean;
-  exact?: boolean;
   component: React.FC;
 }
 
 export const Home: IRoute = {
   title: 'Home',
-  path: '/home',
-  exact: true,
+  path: '/',
   component: HomeComponent,
 };
 
@@ -68,7 +66,7 @@ export const Contact: IRoute = {
   component: ContactComponent,
 };
 
-export const Routes = [
+export const MyRoutes = [
   Home,
   // Portfolio,
   Bio,
@@ -77,5 +75,3 @@ export const Routes = [
   // Gallery,
   Contact,
 ];
-
-export default Routes;
