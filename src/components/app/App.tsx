@@ -1,11 +1,11 @@
 import React from 'react';
 import { Routes } from 'react-router-dom';
 
-import './App.scss';
+import Header from '../header/header';
+import { MyRoutes } from '../routing/routes';
+import Routing from '../routing/routing';
 
-import Header from './components/header/header';
-import { MyRoutes } from './components/routing/routes';
-import Routing from './components/routing/routing';
+import './App.scss';
 
 const App: React.FC = () => {
   return (
