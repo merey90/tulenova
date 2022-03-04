@@ -10,8 +10,6 @@ import Firebase from './firebase';
 
 import './index.scss';
 
-Firebase.init();
-
 let theme = createTheme({
   palette: {
     primary: {
@@ -30,6 +28,8 @@ let theme = createTheme({
 });
 
 theme = responsiveFontSizes(theme);
+
+Firebase.init();
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
