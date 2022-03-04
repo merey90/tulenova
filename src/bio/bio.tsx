@@ -43,8 +43,8 @@ export const Bio: React.FC = () => {
           Musikverein), Russia, Hungary, France, Holland, Slovenia and in other countries.
         </p>
         <p>
-          Mira speaks English, German, Russian, Kazakh, French and resides in Berlin, Germany between concerts with her
-          son and husband.
+          Mira speaks English, German, Russian, Kazakh, French and resides and studies in Berlin, Germany between
+          concerts.
         </p>
       </Box>
     </Container>
