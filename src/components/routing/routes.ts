@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import HomeComponent from '../../home/home';
 import BioComponent from '../../bio/bio';
 import { Gallery as GalleryComponent } from '../../gallery';
@@ -42,9 +42,9 @@ export const Contact: IRoute = {
 /**
  * Music sheet shop
  */
-export const Schedule: IRoute = {
-  title: 'Schedule',
-  path: '/schedule',
+export const Concerts: IRoute = {
+  title: 'Concerts',
+  path: '/concerts',
   disabled: true,
   component: HomeComponent,
 };
@@ -52,6 +52,13 @@ export const Schedule: IRoute = {
 export const Media: IRoute = {
   title: 'Media',
   path: '/media',
+  disabled: true,
+  component: HomeComponent,
+};
+
+export const Repertoire: IRoute = {
+  title: 'Repertoire',
+  path: '/repertoire',
   disabled: true,
   component: HomeComponent,
 };
@@ -71,7 +78,8 @@ export const MyRoutes = [
   // Portfolio,
   About,
   Contact,
-  // Library,
-  // Calendar,
+  Media,
+  Repertoire,
+  Concerts,
   // Gallery,
 ];
