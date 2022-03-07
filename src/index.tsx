@@ -8,8 +8,6 @@ import reportWebVitals from './reportWebVitals';
 import Firebase from './firebase';
 import App from './components/app/App';
 
-Firebase.init();
-
 let theme = createTheme({
   palette: {
     primary: {
@@ -28,6 +26,8 @@ let theme = createTheme({
 });
 
 theme = responsiveFontSizes(theme);
+
+Firebase.init();
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>

@@ -7,15 +7,13 @@ import Routing from '../routing/routing';
 
 import './App.scss';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <Header />
-      <main className="App-main">
-        <Routes>{MyRoutes.map(Routing)}</Routes>
-      </main>
-    </div>
-  );
-};
+const App: React.FC = () => (
+  <div className="App">
+    <Header />
+    <main className="App-main">
+      <Routes>{MyRoutes.map(Routing)}</Routes>
+    </main>
+  </div>
+);
 
 export default App;
