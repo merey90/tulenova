@@ -50,5 +50,3 @@ export const Bio: React.FC = () => {
     </Container>
   );
 };
-
-export default Bio;
