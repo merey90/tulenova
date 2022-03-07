@@ -1,14 +1,11 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Firebase from './firebase';
-
-import './index.scss';
+import App from './components/app/App';
 
 let theme = createTheme({
   palette: {
