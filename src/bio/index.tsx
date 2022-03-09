@@ -1,6 +1,6 @@
-import * as React from 'react';
 import Container from '@material-ui/core/Container';
 import { Paper, Box } from '@material-ui/core';
+
 import { ASSETS_PATH } from '../assets/constants';
 
 import './bio.scss';

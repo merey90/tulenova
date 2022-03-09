@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Paper, Box, Card, CardContent, Typography, Grid, Container } from '@material-ui/core';
 
 import './contact.scss';

@@ -1,16 +1,16 @@
-import * as React from 'react';
 import { AppBar, Typography, Toolbar, IconButton, Container, Hidden, Zoom, SwipeableDrawer } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
+import { Link } from 'react-router-dom';
 
 import './header.scss';
 
 import Navigation from './navigation';
-import { Link } from 'react-router-dom';
 import { Home } from '../routing/routes';
+import { useState } from 'react';
 
 export const Header: React.FC = () => {
-  const [isDrawerOpen, setDrawerState] = React.useState(false);
+  const [isDrawerOpen, setDrawerState] = useState(false);
   const closeDrawer = () => setDrawerState(false);
   const triggerDrawer = () => setDrawerState(!isDrawerOpen);
   return (

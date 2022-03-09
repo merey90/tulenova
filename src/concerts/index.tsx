@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Container, Typography, CardContent, Card, Box } from '@material-ui/core';
+import { Container, Typography, CardContent, Box, Card } from '@material-ui/core';
 
 interface IEvent {
   date: string;
