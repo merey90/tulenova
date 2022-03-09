@@ -1,14 +1,16 @@
 import HomeComponent from '../../home/home';
 import { Bio as BioComponent } from '../../bio';
 import { Contact as ContactComponent } from '../../contact';
-import { Calendar as CalendarComponent } from '../../concerts';
+import { Calendar as CalendarComponent } from '../../calendar';
 import { Media as MediaComponent } from '../../media';
 
 export interface IRoute {
   title: string;
   path: string;
+  to?: string;
   disabled?: boolean;
   component: React.FC;
+  match?: string;
 }
 
 export const Home: IRoute = {
@@ -44,7 +46,9 @@ export const Calendar: IRoute = {
 
 export const Media: IRoute = {
   title: 'Media',
-  path: '/media',
+  path: '/media/*',
+  to: '/media/photos',
+  match: '/media',
   component: MediaComponent,
 };
 

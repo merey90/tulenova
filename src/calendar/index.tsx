@@ -1,4 +1,5 @@
 import { Container, Typography, CardContent, Box, Card } from '@material-ui/core';
+import { Fragment } from 'react';
 
 interface IEvent {
   date: string;
@@ -7,7 +8,7 @@ interface IEvent {
 }
 
 const renderCards = ({ date, title, place }: IEvent, index: number, array: Array<IEvent>) => (
-  <>
+  <Fragment key={date + title}>
     <Typography gutterBottom variant="h6" align="left">
       {date}
     </Typography>
@@ -17,7 +18,7 @@ const renderCards = ({ date, title, place }: IEvent, index: number, array: Array
       {place}
     </Typography>
     {index < array.length - 1 && <hr />}
-  </>
+  </Fragment>
 );
 
 export const Calendar: React.FC = () => {
@@ -60,7 +61,7 @@ export const Calendar: React.FC = () => {
               Past highlights
             </Typography>
             {highlights.map((highlight) => (
-              <Typography variant="body2" align="left">
+              <Typography key={highlight} variant="body2" align="left">
                 {highlight}
               </Typography>
             ))}
