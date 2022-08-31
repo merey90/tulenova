@@ -5,7 +5,7 @@ import { responsiveFontSizes, createTheme, ThemeProvider } from '@material-ui/co
 
 import reportWebVitals from './reportWebVitals';
 import Firebase from './firebase';
-import App from './components/app/App';
+import { App } from './components/app';
 
 let theme = createTheme({
   palette: {

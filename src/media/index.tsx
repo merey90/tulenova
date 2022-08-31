@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Paper, Tab, Tabs } from '@material-ui/core';
+import { Paper, Tab, Tabs } from '@material-ui/core';
 import { useParams, Link, Routes, Route } from 'react-router-dom';
 
 import { Photos } from './photos';
@@ -14,7 +14,7 @@ export const Media: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
+    <>
       <Paper>
         <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" indicatorColor="secondary" textColor="inherit">
           <Tab component={Link} label="Photos" to="photos" value="photos" />
@@ -25,7 +25,7 @@ export const Media: React.FC = () => {
       <Routes>
         <Route path=":mediaTab/*" element={<MediaContent setTab={setTab} />} />
       </Routes>
-    </Container>
+    </>
   );
 };
 
