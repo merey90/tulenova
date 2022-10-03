@@ -1,73 +1,75 @@
-import { Container, Typography, CardContent, Box, Card } from '@material-ui/core';
-import { Fragment } from 'react';
+import { Container, Typography, Box } from '@material-ui/core';
+import { ConcertItem, IEvent } from './concertItem';
 
-interface IEvent {
-  date: string;
-  title: string;
-  place: string;
-}
+import './styles.scss';
 
-const renderCards = ({ date, title, place }: IEvent, index: number, array: Array<IEvent>) => (
-  <Fragment key={date + title}>
-    <Typography gutterBottom variant="h6" align="left">
-      {date}
-    </Typography>
-    <Typography variant="body2" align="left">
-      {title}
-      <br />
-      {place}
-    </Typography>
-    {index < array.length - 1 && <hr />}
-  </Fragment>
-);
+const cons: Array<IEvent> = [
+  {
+    date: 'November 17,18 2022',
+    title: 'Ensemble Modern',
+    place: 'Meersburg',
+    link: 'https://www.internationale-em-akademie.de/en/apply-now',
+  },
+  {
+    date: 'November 19 2022',
+    title: 'Ensemble Modern',
+    place: 'The Music University Freiburg',
+    link: 'https://www.internationale-em-akademie.de/en/apply-now',
+  },
+  {
+    date: 'November 21 2022',
+    title: 'Ensemble Modern',
+    place: 'The Bavarian Academy of Fine arts in Munich',
+    link: 'https://www.internationale-em-akademie.de/en/apply-now',
+  },
+];
+
+const highlights: Array<IEvent> = [
+  {
+    date: '9.04. ',
+    title: 'Pierrot Lunaire',
+    place: "Atelier de la Main d'Or | Paris, France",
+  },
+  {
+    date: '13.04.',
+    title: 'Rechital',
+    place: 'Esterhazy Palace Haydn-saal',
+  },
+  {
+    date: '15.12.',
+    title: 'Concert',
+    place: 'Wiener Konzerthaus Mozart-saal',
+  },
+  {
+    date: '21.10.',
+    title: 'Hosokawa',
+    place: 'Japanese-German Center Berlin',
+  },
+];
 
 export const Concerts: React.FC = () => {
-  const cons: Array<IEvent> = [
-    {
-      date: 'February 13',
-      title: 'C.P.E. Bach Concerto d-moll',
-      place: 'Musikzyklus Fuerstenwalde',
-    },
-    {
-      date: 'April 2',
-      title: 'Pierrot Lunaire',
-      place: 'Berlin Toyo Saal',
-    },
-    {
-      date: 'April 3',
-      title: 'Pierrot Lunaire',
-      place: 'Berlin Toyo Saal',
-    },
-    {
-      date: 'April 9',
-      title: 'Pierrot Lunaire',
-      place: "Atelier de la Main d'Or",
-    },
-  ];
-
-  const highlights = ['13.04. Esterhazy Palace Haydn-saal', '15.12 Wiener Konzerthaus Mozart-saal'];
-
   return (
-    <Container maxWidth="md">
-      <Box>
-        <Card>
-          <CardContent>{cons.map(renderCards)}</CardContent>
-        </Card>
-      </Box>
-      <Box mt={4}>
-        <Card>
-          <CardContent>
-            <Typography gutterBottom variant="h6" align="left">
-              Past highlights
-            </Typography>
-            {highlights.map((highlight) => (
-              <Typography key={highlight} variant="body2" align="left">
-                {highlight}
-              </Typography>
-            ))}
-          </CardContent>
-        </Card>
-      </Box>
-    </Container>
+    <div className="concerts-wrapper">
+      <Container>
+        <Box marginBottom={40} />
+        <Typography variant="h3" gutterBottom align="left" color="secondary">
+          Concerts
+        </Typography>
+        <Box className="concerts-backdrop">
+          {cons.map((concert) => (
+            <ConcertItem key={concert.date} {...concert} />
+          ))}
+        </Box>
+
+        <Typography variant="h4" gutterBottom align="left" color="secondary">
+          Past events
+        </Typography>
+        <Box className="concerts-backdrop">
+          {highlights.map((highlight) => (
+            <ConcertItem key={highlight.date} {...highlight} />
+          ))}
+        </Box>
+      </Container>
+    </div>
   );
 };
