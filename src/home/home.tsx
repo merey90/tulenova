@@ -11,13 +11,13 @@ export const Home: React.FC = () => (
       Mira Tulenova
     </Typography>
     <span className="home-links">
-      <a className="social-link" href="https://www.facebook.com/mira.tulenova" target="blank">
+      <a className="social-link" href="https://www.facebook.com/mira.tulenova" target="_blank">
         <FacebookIcon fontSize="large" />
       </a>
-      <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="blank">
+      <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="_blank">
         <InstagramIcon fontSize="large" />
       </a>
-      <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="blank">
+      <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="_blank">
         <TwitterIcon fontSize="large" />
       </a>
       <Button component={Link} to="/concerts" variant="outlined">

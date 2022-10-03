@@ -3,6 +3,7 @@ import { Bio as BioComponent } from '../../bio';
 import { Contact as ContactComponent } from '../../contact';
 import { Concerts as ConcertsComponent } from '../../concerts';
 import { Media as MediaComponent } from '../../media';
+import { Projects as ProjectsComponent } from '../../projects';
 
 export interface IRoute {
   title: string;
@@ -28,7 +29,7 @@ export const Blog: IRoute = {
 export const Projects: IRoute = {
   title: 'Projects',
   path: '/projects',
-  component: HomeComponent,
+  component: ProjectsComponent,
 };
 
 export const About: IRoute = {
