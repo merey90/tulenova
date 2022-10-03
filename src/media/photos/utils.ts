@@ -29,6 +29,7 @@ import img28 from './assets/photo 28.jpg';
 import img29 from './assets/photo 29.jpg';
 import img30 from './assets/photo 30.jpg';
 import img31 from './assets/photo 31.jpg';
+import img32 from './assets/photo 32.jpg';
 
 export const imageItems = [
   {
@@ -183,6 +184,11 @@ export const imageItems = [
   },
   {
     img: img31,
+    cols: 1,
+    title: 'Mira Tulenova',
+  },
+  {
+    img: img32,
     cols: 1,
     title: 'Mira Tulenova',
   },
