@@ -18,6 +18,7 @@ export const Media: React.FC = () => {
       <Paper>
         <Tabs value={tab} onChange={handleTabChange} variant="fullWidth" indicatorColor="secondary" textColor="inherit">
           <Tab component={Link} label="Photos" to="photos" value="photos" />
+          <Tab component={Link} label="Repertoire" to="repertoire" value="repertoire" />
           <Tab component={Link} label="Videos" to="videos" value="videos" />
           <Tab component={Link} label="Audios" to="audios" value="audios" />
         </Tabs>

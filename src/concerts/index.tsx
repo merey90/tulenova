@@ -21,7 +21,7 @@ const renderCards = ({ date, title, place }: IEvent, index: number, array: Array
   </Fragment>
 );
 
-export const Calendar: React.FC = () => {
+export const Concerts: React.FC = () => {
   const cons: Array<IEvent> = [
     {
       date: 'February 13',
