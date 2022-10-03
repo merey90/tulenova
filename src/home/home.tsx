@@ -20,7 +20,7 @@ export const Home: React.FC = () => (
       <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="blank">
         <TwitterIcon fontSize="large" />
       </a>
-      <Button component={Link} to="/concert" variant="outlined">
+      <Button component={Link} to="/concerts" variant="outlined">
         MAIN SITE
       </Button>
       <Button component={Link} to="/contact" variant="outlined">
