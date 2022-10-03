@@ -1,7 +1,7 @@
 import { AppBar, Typography, Toolbar, IconButton, Container, Hidden, Zoom, SwipeableDrawer } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import './header.scss';
 
@@ -10,6 +10,9 @@ import { Home } from '../routing/routes';
 import { useState } from 'react';
 
 export const Header: React.FC = () => {
+  const { pathname } = useLocation();
+  if (pathname === '/') return null;
+
   const [isDrawerOpen, setDrawerState] = useState(false);
   const closeDrawer = () => setDrawerState(false);
   const triggerDrawer = () => setDrawerState(!isDrawerOpen);
@@ -34,12 +37,6 @@ export const Header: React.FC = () => {
                 </Zoom>
               </IconButton>
             </Hidden>
-            <Link to={Home.path}>
-              <img className="header-logo" src={`${process.env.PUBLIC_URL}/header-logo.png`} alt="Header-logo" />
-            </Link>
-            <Typography variant="h6" className="header-typo">
-              Meruyert Tulenova
-            </Typography>
             <Hidden xsDown>
               <Navigation handleClose={closeDrawer} />
             </Hidden>

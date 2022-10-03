@@ -1,12 +1,47 @@
 @import '../assets/styles/variables';
+@import url(//db.onlinewebfonts.com/c/3403275a8aeb6fc07122a8dd7f10e0ec?family=DINNextLTW04-Light);
+
+@font-face {
+  font-family: 'DINNext';
+  src: url('//db.onlinewebfonts.com/t/3403275a8aeb6fc07122a8dd7f10e0ec.eot');
+  src: url('//db.onlinewebfonts.com/t/3403275a8aeb6fc07122a8dd7f10e0ec.eot?#iefix') format('embedded-opentype'),
+    url('//db.onlinewebfonts.com/t/3403275a8aeb6fc07122a8dd7f10e0ec.woff2') format('woff2'),
+    url('//db.onlinewebfonts.com/t/3403275a8aeb6fc07122a8dd7f10e0ec.woff') format('woff'),
+    url('//db.onlinewebfonts.com/t/3403275a8aeb6fc07122a8dd7f10e0ec.ttf') format('truetype'),
+    url('//db.onlinewebfonts.com/t/3403275a8aeb6fc07122a8dd7f10e0ec.svg#DINNextLTW04-Light') format('svg');
+}
 
 .home-container {
-  background-image: url('#{$assets-path}/background.jpg');
+  background-image: url('./background.jpg');
   background-repeat: no-repeat;
   background-color: black;
   background-size: cover;
   background-position-x: 55%;
   flex-grow: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.home-name {
+  color: #a3956d;
+  font-family: 'DINNext' !important;
+}
+
+.social-link {
+  text-decoration: none;
+  color: #a3956d;
+}
+
+.home-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #a3956d;
+  & a,
+  button {
+    margin-right: 10px;
+  }
 }
 
 $primary-color: red;
