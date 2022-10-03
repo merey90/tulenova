@@ -7,6 +7,8 @@ import { Videos } from './videos';
 import { Audios } from './audios';
 import { Repertoire } from './repertoire';
 
+import './styles.scss';
+
 export const Media: React.FC = () => {
   const [tab, setTab] = useState('photos');
 
@@ -22,8 +24,9 @@ export const Media: React.FC = () => {
           onChange={handleTabChange}
           variant="fullWidth"
           indicatorColor="secondary"
-          textColor="inherit"
+          textColor="secondary"
           centered
+          className="media-tabs"
         >
           <Tab component={Link} label="Photos" to="photos" value="photos" />
           <Tab component={Link} label="Videos" to="videos" value="videos" />
