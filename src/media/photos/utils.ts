@@ -187,3 +187,9 @@ export const imageItems = [
     title: 'Mira Tulenova',
   },
 ];
+
+export interface IImageItem {
+  img: string;
+  cols: number;
+  title: string;
+}
