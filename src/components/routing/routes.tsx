@@ -4,6 +4,7 @@ import { Contact as ContactComponent } from '../../contact';
 import { Concerts as ConcertsComponent } from '../../concerts';
 import { Media as MediaComponent } from '../../media';
 import { Projects as ProjectsComponent } from '../../projects';
+import { Blogs as BlogsComponent } from '../../blogs';
 
 export interface IRoute {
   title: string;
@@ -23,7 +24,7 @@ export const Home: IRoute = {
 export const Blog: IRoute = {
   title: 'Blog',
   path: '/blog',
-  component: HomeComponent,
+  component: BlogsComponent,
 };
 
 export const Projects: IRoute = {
