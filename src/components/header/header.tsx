@@ -1,12 +1,11 @@
-import { AppBar, Typography, Toolbar, IconButton, Container, Hidden, Zoom, SwipeableDrawer } from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Container, Hidden, Zoom, SwipeableDrawer } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import './header.scss';
 
 import Navigation from './navigation';
-import { Home } from '../routing/routes';
 import { useState } from 'react';
 
 export const Header: React.FC = () => {
