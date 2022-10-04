@@ -20,14 +20,19 @@
   flex-grow: 1;
   display: flex;
   justify-content: space-evenly;
-  padding-top: 200px;
   align-items: baseline;
 }
 
 .home-name {
-  color: #a3956d;
-  font-family: 'DINNext' !important;
-  margin-bottom: 400px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+
+  h3 {
+    color: #a3956d;
+    font-family: 'DINNext' !important;
+  }
 }
 
 .social-link {
@@ -39,6 +44,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 50vh;
   color: #a3956d;
   & a,
   button {
