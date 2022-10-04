@@ -16,16 +16,18 @@
   background-repeat: no-repeat;
   background-color: black;
   background-size: cover;
-  background-position-x: 55%;
+  background-position-x: 50%;
   flex-grow: 1;
   display: flex;
   justify-content: space-evenly;
-  align-items: center;
+  padding-top: 200px;
+  align-items: baseline;
 }
 
 .home-name {
   color: #a3956d;
   font-family: 'DINNext' !important;
+  margin-bottom: 400px !important;
 }
 
 .social-link {
