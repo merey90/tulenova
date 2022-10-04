@@ -1,0 +1,33 @@
+.concerts-wrapper {
+  background-image: url('./background.jpg');
+  min-height: 100vh;
+  background-position: center;
+}
+
+.concerts-backdrop {
+  background: rgba($color: #000000, $alpha: 0.8);
+  padding: 40px;
+  color: white;
+  margin-bottom: 60px;
+}
+
+.concert-item:not(:last-child) {
+  margin-bottom: 50px;
+}
+
+.concert-item-title {
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.concert-item-div {
+  border: 1px solid #a3956d;
+  width: 30px;
+  margin-bottom: 10px;
+}
+
+.concert-item-button {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}

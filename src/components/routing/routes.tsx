@@ -1,8 +1,10 @@
 import HomeComponent from '../../home/home';
 import { Bio as BioComponent } from '../../bio';
 import { Contact as ContactComponent } from '../../contact';
-import { Calendar as CalendarComponent } from '../../calendar';
+import { Concerts as ConcertsComponent } from '../../concerts';
 import { Media as MediaComponent } from '../../media';
+import { Projects as ProjectsComponent } from '../../projects';
+import { Blogs as BlogsComponent } from '../../blogs';
 
 export interface IRoute {
   title: string;
@@ -19,11 +21,16 @@ export const Home: IRoute = {
   component: HomeComponent,
 };
 
-export const News: IRoute = {
-  title: 'News',
-  path: '/news',
-  disabled: true,
-  component: HomeComponent,
+export const Blog: IRoute = {
+  title: 'Blog',
+  path: '/blog',
+  component: BlogsComponent,
+};
+
+export const Projects: IRoute = {
+  title: 'Projects',
+  path: '/projects',
+  component: ProjectsComponent,
 };
 
 export const About: IRoute = {
@@ -38,10 +45,10 @@ export const Contact: IRoute = {
   component: ContactComponent,
 };
 
-export const Calendar: IRoute = {
-  title: 'Calendar',
-  path: '/calendar',
-  component: CalendarComponent,
+export const Concerts: IRoute = {
+  title: 'Concerts',
+  path: '/concerts',
+  component: ConcertsComponent,
 };
 
 export const Media: IRoute = {
@@ -52,10 +59,4 @@ export const Media: IRoute = {
   component: MediaComponent,
 };
 
-export const Repertoire: IRoute = {
-  title: 'Repertoire',
-  path: '/repertoire',
-  component: HomeComponent,
-};
-
-export const MyRoutes = [Home, Calendar, About, Repertoire, Media, Contact];
+export const MyRoutes = [Home, Concerts, About, Media, Projects, Blog, Contact];
