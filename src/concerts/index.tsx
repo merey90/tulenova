@@ -8,7 +8,7 @@ const cons: Array<IEvent> = [
     date: 'November 17,18 2022',
     title: 'Ensemble Modern',
     place: 'Meersburg',
-    link: 'https://www.internationale-em-akademie.de/en/apply-now',
+    link: 'https://www.meersburg.de/de/Veranstaltungen/Meersburger-KonzertGespraeche',
   },
   {
     date: 'November 19 2022',
@@ -20,7 +20,7 @@ const cons: Array<IEvent> = [
     date: 'November 21 2022',
     title: 'Ensemble Modern',
     place: 'The Bavarian Academy of Fine arts in Munich',
-    link: 'https://www.internationale-em-akademie.de/en/apply-now',
+    link: 'https://www.badsk.de/veranstaltungen/2022/zweite-hans-zender-akademie',
   },
 ];
 

@@ -7,7 +7,7 @@ export interface IProps {
 }
 
 const PageTitle: React.FC<IProps> = ({ title }) => {
-  const mika = 'Meruyert Tulenova';
+  const mika = 'Mira Tulenova';
   const eTitle = title === Home.title ? '' : title;
   const completeTitle = eTitle ? `${eTitle} | ${mika}` : mika;
   return (
