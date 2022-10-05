@@ -1,4 +1,4 @@
-import { Container, Typography, Box } from '@material-ui/core';
+import { Container, Typography, Box, Hidden } from '@material-ui/core';
 import { ConcertItem, IEvent } from './concertItem';
 
 import './styles.scss';
@@ -51,7 +51,10 @@ export const Concerts: React.FC = () => {
   return (
     <div className="concerts-wrapper">
       <Container>
-        <Box marginBottom={40} />
+        <Hidden xsDown>
+          <Box marginBottom={40} />
+        </Hidden>
+        <Box mt={2} />
         <Typography variant="h3" gutterBottom align="left" color="secondary">
           Concerts
         </Typography>

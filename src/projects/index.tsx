@@ -1,4 +1,4 @@
-import { Container, Box } from '@material-ui/core';
+import { Container, Box, Hidden } from '@material-ui/core';
 import { IProject, ProjectItem } from './projectItem';
 
 const projects: Array<IProject> = [
@@ -33,8 +33,10 @@ export const Projects: React.FC = () => {
   return (
     <div className="projects-wrapper">
       <Container>
-        <Box marginBottom={40} />
-        <Box className="projects-backdrop">
+        <Hidden xsDown>
+          <Box marginBottom={40} />
+        </Hidden>
+        <Box mt={2} className="projects-backdrop">
           {projects.map((project) => (
             <ProjectItem key={project.title} {...project} />
           ))}
