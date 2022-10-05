@@ -1,11 +1,22 @@
 .contact-container {
-  .contact-left {
-    text-align: end;
-    padding-right: 8px;
-    border-right: 1px solid #000;
-  }
-  .contact-right {
-    text-align: start;
-    padding-left: 8px;
-  }
+  padding-top: 40px;
+}
+
+.App-main {
+  background-color: #d0a786;
+}
+
+.contact-form {
+  margin-top: 40px;
+  padding: 25px;
+  border-radius: 8px;
+}
+
+.contact-mail-link {
+  margin: 25px !important;
+  color: inherit;
+  cursor: pointer;
+  border: 1px solid;
+  border-color: rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
 }
