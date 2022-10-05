@@ -78,7 +78,7 @@ export const Contact: React.FC = () => {
     <Container maxWidth="md" className="contact-container">
       {!sent && (
         <>
-          <Typography variant="h3" onClick={handleEmailClick} className="contact-mail-link">
+          <Typography variant="h5" onClick={handleEmailClick} className="contact-mail-link">
             Click to copy email address,
             <br />
             or use the form below
