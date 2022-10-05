@@ -1,0 +1,12 @@
+.bio-wrapper {
+  background-image: url('../assets/images/background.jpg');
+  min-height: 100vh;
+  background-position: center;
+}
+
+.bio-backdrop {
+  background: rgba($color: #000000, $alpha: 0.8);
+  padding: 40px;
+  color: white;
+  margin-bottom: 60px;
+}
