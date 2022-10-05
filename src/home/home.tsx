@@ -20,7 +20,7 @@ export const Home: React.FC = () => (
             <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="_blank">
               <InstagramIcon fontSize="large" />
             </a>
-            <a className="social-link" href="https://www.instagram.com/mira_tulenova/" target="_blank">
+            <a className="social-link" href="https://mobile.twitter.com/miratulenova" target="_blank">
               <TwitterIcon fontSize="large" />
             </a>
           </Grid>
