@@ -10,11 +10,12 @@ import { useState } from 'react';
 
 export const Header: React.FC = () => {
   const { pathname } = useLocation();
-  if (pathname === '/') return null;
 
   const [isDrawerOpen, setDrawerState] = useState(false);
   const closeDrawer = () => setDrawerState(false);
   const triggerDrawer = () => setDrawerState(!isDrawerOpen);
+
+  if (pathname === '/') return null;
   return (
     <>
       <AppBar position="static" className="header">
