@@ -14,7 +14,7 @@ const cons: Array<IEvent> = [
     date: 'November 19 2022',
     title: 'Ensemble Modern',
     place: 'The Music University Freiburg',
-    link: 'https://www.internationale-em-akademie.de/en/apply-now',
+    link: 'https://www.ensemble-modern.com/de/projekte/de/kalender/2022-11-19/5800#k-5800',
   },
   {
     date: 'November 21 2022',
