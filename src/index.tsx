@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -12,14 +12,16 @@ import { theme } from './utils/theme';
 
 Firebase.init();
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const container = document.getElementById('root')!;
+const root = createRoot(container);
+root.render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </ThemeProvider>,
-  document.getElementById('root')
+  </ThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
