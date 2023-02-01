@@ -32,7 +32,7 @@ const highlights: Array<IEvent> = [
   },
   {
     date: '13.04.',
-    title: 'Rechital',
+    title: 'Recital',
     place: 'Esterhazy Palace Haydn-saal',
   },
   {
