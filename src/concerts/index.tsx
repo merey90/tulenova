@@ -65,7 +65,7 @@ export const Concerts: React.FC = () => {
           Concerts
         </Typography>
         <Box className="concerts-backdrop">
-          {cons.map((concert) => (
+          {cons.reverse().map((concert) => (
             <ConcertItem key={concert.date} {...concert} />
           ))}
         </Box>
