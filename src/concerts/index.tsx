@@ -22,6 +22,12 @@ const cons: Array<IEvent> = [
     place: 'The Bavarian Academy of Fine arts in Munich',
     link: 'https://www.badsk.de/veranstaltungen/2022/zweite-hans-zender-akademie',
   },
+  {
+    date: 'August 2023',
+    title: 'Das Internationales Musikinstitut Darmstadt',
+    place: 'Darmstadt, Germany',
+    link: 'https://internationales-musikinstitut.de/en/imd/ueber/profil/',
+  },
 ];
 
 const highlights: Array<IEvent> = [
