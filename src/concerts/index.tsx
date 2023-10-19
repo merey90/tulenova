@@ -26,7 +26,7 @@ const cons: Array<IEvent> = [
     date: 'August 2023',
     title: 'Das Internationales Musikinstitut Darmstadt',
     place: 'Darmstadt, Germany',
-    link: 'https://internationales-musikinstitut.de/en/imd/ueber/profil/',
+    link: 'https://internationales-musikinstitut.de/de/ferienkurse/ueber/musiker-dozenten/mira-tulenova/',
   },
 ];
 
