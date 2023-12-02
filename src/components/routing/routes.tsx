@@ -28,7 +28,7 @@ export const Blog: IRoute = {
 };
 
 export const Projects: IRoute = {
-  title: 'Projects',
+  title: 'Research Projects',
   path: '/projects',
   component: ProjectsComponent,
 };
