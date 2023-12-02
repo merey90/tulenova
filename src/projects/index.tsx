@@ -37,6 +37,12 @@ export const Projects: React.FC = () => {
           <Box marginBottom={40} />
         </Hidden>
         <Box mt={2} className="projects-backdrop">
+          <p className="projects-header">
+            Parallel to her musical career, Mira has contributed to the cultural policy of Kazakhstan and the
+            preservation of the cultural heritage of Central Asia. Since 2012, she has worked as a researcher, culture
+            expert, and project manager for the Research Institute of Culture, UNESCO Central Asia, Association of
+            Museums, and the Ministry of Culture of Kazakhstan.
+          </p>
           {projects.map((project) => (
             <ProjectItem key={project.title} {...project} />
           ))}
