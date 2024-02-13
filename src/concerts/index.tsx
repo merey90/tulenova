@@ -5,6 +5,12 @@ import './styles.scss';
 
 const cons: Array<IEvent> = [
   {
+    date: 'November 1 2022',
+    title: 'Daniel Lozakovich',
+    place: 'Berliner Philharmonie',
+    link: 'https://www.deutschegrammophon.com/de/kuenstler-innen/daniel-lozakovich/live-termine',
+  },
+  {
     date: 'November 17,18 2022',
     title: 'Ensemble Modern',
     place: 'Meersburg',
@@ -27,6 +33,12 @@ const cons: Array<IEvent> = [
     title: 'Das Internationales Musikinstitut Darmstadt',
     place: 'Darmstadt, Germany',
     link: 'https://internationales-musikinstitut.de/de/ferienkurse/ueber/musiker-dozenten/mira-tulenova/',
+  },
+  {
+    date: 'October 29 2023',
+    title: 'Aigerim Seilova, Cedrik Fermont',
+    place: 'Berlin, Germany',
+    link: 'https://www.field-notes.berlin/veranstaltung/alireza-ostovar-solo-mira-tulenova-aigerim-seilova-cedrik-fermont-trio-c-fermont-solo',
   },
 ];
 
