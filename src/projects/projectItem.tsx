@@ -4,7 +4,7 @@ import './styles.scss';
 export interface IProject {
   title: string;
   description: string;
-  link: string;
+  link: string | undefined;
 }
 
 export const ProjectItem: React.FC<IProject> = ({ title, description, link }) => (
@@ -19,9 +19,11 @@ export const ProjectItem: React.FC<IProject> = ({ title, description, link }) =>
       </Typography>
     </Box>
     <Box alignSelf="flex-end">
-      <Button variant="contained" color="secondary" component="a" href={link} target="_blank">
-        Read more
-      </Button>
+      {link && (
+        <Button variant="contained" color="secondary" component="a" href={link} target="_blank">
+          Read more
+        </Button>
+      )}
     </Box>
   </Box>
 );

@@ -27,6 +27,11 @@ const projects: Array<IProject> = [
     description: 'Researcher, Museum association of the Culture Department of Almaty',
     link: 'https://commons.wikimedia.org/wiki/Category:Cultural_heritage_monuments_in_Almaty',
   },
+  {
+    title: 'RE:SOUND Central Asia 2024-2025',
+    description: 'Curator',
+    link: 'https://arttech.garden',
+  },
 ];
 
 export const Projects: React.FC = () => {

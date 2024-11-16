@@ -40,6 +40,12 @@ const cons: Array<IEvent> = [
     place: 'Berlin, Germany',
     link: 'https://www.field-notes.berlin/veranstaltung/alireza-ostovar-solo-mira-tulenova-aigerim-seilova-cedrik-fermont-trio-c-fermont-solo',
   },
+  {
+    date: 'November 2024',
+    title: 'Being Adam: Voices festival',
+    place: 'Silent Green Betonhalle Berlin, Germany',
+    link: 'https://voices-program.com/e2024/bei',
+  },
 ];
 
 const highlights: Array<IEvent> = [
