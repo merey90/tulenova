@@ -3,6 +3,11 @@ import { IProject, ProjectItem } from './projectItem';
 
 const projects: Array<IProject> = [
   {
+    title: 'RE:SOUND Central Asia 2024-2025',
+    description: 'Curator',
+    link: 'https://arttech.garden',
+  },
+  {
     title: '​ARTISTS OF MODERN KAZAKHSTAN',
     description: 'Project manager, Research institute of culture of the Ministry of culture of Kazakhstan',
     link: 'https://www.centralasiaprogram.org/artists-modern-kazakhstan',
@@ -26,11 +31,6 @@ const projects: Array<IProject> = [
     title: 'Cultural heritage monuments of Almaty',
     description: 'Researcher, Museum association of the Culture Department of Almaty',
     link: 'https://commons.wikimedia.org/wiki/Category:Cultural_heritage_monuments_in_Almaty',
-  },
-  {
-    title: 'RE:SOUND Central Asia 2024-2025',
-    description: 'Curator',
-    link: 'https://arttech.garden',
   },
 ];
 

@@ -5,34 +5,10 @@ import './styles.scss';
 
 const cons: Array<IEvent> = [
   {
-    date: 'November 1 2022',
-    title: 'Daniel Lozakovich',
-    place: 'Berliner Philharmonie',
-    link: 'https://www.deutschegrammophon.com/de/kuenstler-innen/daniel-lozakovich/live-termine',
-  },
-  {
-    date: 'November 17,18 2022',
-    title: 'Ensemble Modern',
-    place: 'Meersburg',
-    link: 'https://www.meersburg.de/de/Veranstaltungen/Meersburger-KonzertGespraeche',
-  },
-  {
-    date: 'November 19 2022',
-    title: 'Ensemble Modern',
-    place: 'The Music University Freiburg',
-    link: 'https://www.ensemble-modern.com/de/projekte/de/kalender/2022-11-19/5800#k-5800',
-  },
-  {
-    date: 'November 21 2022',
-    title: 'Ensemble Modern',
-    place: 'The Bavarian Academy of Fine arts in Munich',
-    link: 'https://www.badsk.de/veranstaltungen/2022/zweite-hans-zender-akademie',
-  },
-  {
-    date: 'August 2023',
-    title: 'Das Internationales Musikinstitut Darmstadt',
-    place: 'Darmstadt, Germany',
-    link: 'https://internationales-musikinstitut.de/de/ferienkurse/ueber/musiker-dozenten/mira-tulenova/',
+    date: 'November 2024',
+    title: 'Being Adam: Voices festival',
+    place: 'Silent Green Betonhalle Berlin, Germany',
+    link: 'https://voices-program.com/e2024/bei',
   },
   {
     date: 'October 29 2023',
@@ -41,10 +17,34 @@ const cons: Array<IEvent> = [
     link: 'https://www.field-notes.berlin/veranstaltung/alireza-ostovar-solo-mira-tulenova-aigerim-seilova-cedrik-fermont-trio-c-fermont-solo',
   },
   {
-    date: 'November 2024',
-    title: 'Being Adam: Voices festival',
-    place: 'Silent Green Betonhalle Berlin, Germany',
-    link: 'https://voices-program.com/e2024/bei',
+    date: 'August 2023',
+    title: 'Das Internationales Musikinstitut Darmstadt',
+    place: 'Darmstadt, Germany',
+    link: 'https://internationales-musikinstitut.de/de/ferienkurse/ueber/musiker-dozenten/mira-tulenova/',
+  },
+  {
+    date: 'November 21 2022',
+    title: 'Ensemble Modern',
+    place: 'The Bavarian Academy of Fine arts in Munich',
+    link: 'https://www.badsk.de/veranstaltungen/2022/zweite-hans-zender-akademie',
+  },
+  {
+    date: 'November 19 2022',
+    title: 'Ensemble Modern',
+    place: 'The Music University Freiburg',
+    link: 'https://www.ensemble-modern.com/de/projekte/de/kalender/2022-11-19/5800#k-5800',
+  },
+  {
+    date: 'November 17,18 2022',
+    title: 'Ensemble Modern',
+    place: 'Meersburg',
+    link: 'https://www.meersburg.de/de/Veranstaltungen/Meersburger-KonzertGespraeche',
+  },
+  {
+    date: 'November 1 2022',
+    title: 'Daniel Lozakovich',
+    place: 'Berliner Philharmonie',
+    link: 'https://www.deutschegrammophon.com/de/kuenstler-innen/daniel-lozakovich/live-termine',
   },
 ];
 
@@ -83,7 +83,7 @@ export const Concerts: React.FC = () => {
           Concerts
         </Typography>
         <Box className="concerts-backdrop">
-          {cons.reverse().map((concert) => (
+          {cons.map((concert) => (
             <ConcertItem key={concert.date} {...concert} />
           ))}
         </Box>
