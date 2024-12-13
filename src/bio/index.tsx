@@ -16,11 +16,11 @@ export const Bio: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Box className="bio-backdrop">
             <p>
-              Mira Tulenova is a Kazakh-German flutist who is deeply passionate about contemporary classical music. As a
-              member of the new generation of international musicians dedicated to pushing the boundaries of their art,
-              she constantly explores new ways to experiment with sound and technical possibilities. Mira is known for
-              her innovative and daring approach to music, and she has quickly gained recognition in the world of
-              contemporary classical music.
+              Mira Tulenova is a Kazakh-German flutist who is deeply passionate about contemporary music. As a member of
+              the new generation of international musicians dedicated to pushing the boundaries of their art, she
+              constantly explores new ways to experiment with sound and technical possibilities. Mira is known for her
+              innovative and daring approach to music, and she has quickly gained recognition in the world of
+              contemporary music.
             </p>
             <p>
               Mira was born into a family of musicians and artists in Almaty. She began her professional musical studies
