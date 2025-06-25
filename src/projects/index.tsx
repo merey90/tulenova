@@ -8,28 +8,28 @@ const projects: Array<IProject> = [
     link: 'https://arttech.garden',
   },
   {
-    title: '​ARTISTS OF MODERN KAZAKHSTAN',
-    description: 'Project manager, Research institute of culture of the Ministry of culture of Kazakhstan',
+    title: 'Artists of Modern Kazakhstan',
+    description: 'Project Manager, Research Institute of Culture, Ministry of Culture of the Republic of Kazakhstan',
     link: 'https://www.centralasiaprogram.org/artists-modern-kazakhstan',
   },
   {
-    title: 'MUSEOLOG',
-    description: 'Researcher, Museums association of the Culture Department of Almaty',
+    title: 'Museolog',
+    description: 'Researcher, Museums Association, Department of Culture of Almaty',
     link: 'https://studylib.ru/doc/151478/museolog-rukovodstvo-pol._zovatelya-programma-po-sozdaniyu-i%E2%80%A6',
   },
   {
-    title: '3D VISUAL MAP OF KAZAKHSTAN',
-    description: 'Researcher, research institute of culture of the Ministry of culture of Kazakhstan',
+    title: '3D Visual Map of Kazakhstan',
+    description: 'Researcher, Research Institute of Culture, Ministry of Culture of the Republic of Kazakhstan',
     link: 'https://3d-maps.kz/en',
   },
   {
-    title: 'Intangible heritage - Culture sector - UNESCO',
-    description: 'Researcher, member of Comission',
+    title: 'Intangible Heritage – Culture Sector – UNESCO',
+    description: 'Researcher, Member of the Commission for UNESCO',
     link: 'https://ich.unesco.org/en/state/kazakhstan-KZ',
   },
   {
-    title: 'Cultural heritage monuments of Almaty',
-    description: 'Researcher, Museum association of the Culture Department of Almaty',
+    title: 'Cultural Heritage Monuments of Almaty',
+    description: 'Researcher, Museums Association, Department of Culture of Almaty',
     link: 'https://commons.wikimedia.org/wiki/Category:Cultural_heritage_monuments_in_Almaty',
   },
 ];
@@ -43,10 +43,10 @@ export const Projects: React.FC = () => {
         </Hidden>
         <Box mt={2} className="projects-backdrop">
           <p className="projects-header">
-            Parallel to her musical career, Mira has contributed to the cultural policy of Kazakhstan and the
-            preservation of the cultural heritage of Central Asia. Since 2012, she has worked as a researcher, culture
-            expert, and project manager for the Research Institute of Culture, UNESCO Central Asia, Association of
-            Museums, and the Ministry of Culture of Kazakhstan.
+            Parallel to her musical career, Mira has been actively involved in shaping cultural policy and preserving
+            the cultural heritage of Central Asia. Since 2012, she has worked as a researcher, cultural expert, and
+            project manager with the Research Institute of Culture, UNESCO Central Asia, the Association of Museums, and
+            the Ministry of Culture of the Republic of Kazakhstan.
           </p>
           {projects.map((project) => (
             <ProjectItem key={project.title} {...project} />
