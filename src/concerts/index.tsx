@@ -5,6 +5,12 @@ import './styles.scss';
 
 const cons: Array<IEvent> = [
   {
+    date: 'Oktober 4 2025',
+    title: 'Day 1: Monat der zeitgenössischen Musik festival',
+    place: 'Kühlhaus Berlin, Germany',
+    link: 'https://field-notes.berlin/kalender/day-1',
+  },
+  {
     date: 'November 2024',
     title: 'Being Adam: Voices festival',
     place: 'Silent Green Betonhalle Berlin, Germany',
@@ -50,7 +56,7 @@ const cons: Array<IEvent> = [
 
 const highlights: Array<IEvent> = [
   {
-    date: '9.04. ',
+    date: '9.04.',
     title: 'Pierrot Lunaire',
     place: "Atelier de la Main d'Or | Paris, France",
   },

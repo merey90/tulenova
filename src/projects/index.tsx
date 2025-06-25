@@ -3,6 +3,11 @@ import { IProject, ProjectItem } from './projectItem';
 
 const projects: Array<IProject> = [
   {
+    title: 'ArtTech Garden',
+    description: 'Founder',
+    link: 'https://arttech.garden',
+  },
+  {
     title: 'RE:SOUND Central Asia 2024-2025',
     description: 'Curator',
     link: 'https://arttech.garden',
