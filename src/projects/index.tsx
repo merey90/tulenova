@@ -15,7 +15,7 @@ const projects: Array<IProject> = [
   {
     title: 'Artists of Modern Kazakhstan',
     description: 'Project Manager, Research Institute of Culture, Ministry of Culture of the Republic of Kazakhstan',
-    link: 'https://www.centralasiaprogram.org/artists-modern-kazakhstan',
+    link: 'https://centralasiaprogram.org/publications-all/voices-from-the-region/artists-of-modern-kazakhstan',
   },
   {
     title: 'Museolog',

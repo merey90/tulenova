@@ -9,6 +9,12 @@ export interface IBlog {
   guid: string;
 }
 
+const extractTextContent = (html: string): string => {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = html;
+  return tempElement.textContent?.substring(0, 300) || '';
+};
+
 export const BlogItem: React.FC<IBlog> = ({ title, description, link }) => (
   <Box className="project-item" display="flex" justifyContent="space-between">
     <Box paddingRight={1}>
@@ -17,7 +23,7 @@ export const BlogItem: React.FC<IBlog> = ({ title, description, link }) => (
       </Typography>
       <div className="project-item-div" />
       <Typography variant="body2" align="left">
-        {description.substring(4, 300)}...
+        {extractTextContent(description)}...
       </Typography>
     </Box>
     <Box alignSelf="flex-end">
