@@ -8,7 +8,7 @@ const projects: Array<IProject> = [
     link: 'https://arttech.garden',
   },
   {
-    title: 'RE:SOUND Central Asia 2024-2025',
+    title: 'RE:SOUND Central Asia 2024-Present',
     description: 'Curator',
     link: 'https://arttech.garden',
   },
