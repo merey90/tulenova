@@ -1,3 +1,5 @@
+@import '../assets/styles/variables';
+
 .projects-wrapper {
   background-image: url('./background.jpg');
   min-height: 100vh;
@@ -22,7 +24,7 @@
 }
 
 .project-item-div {
-  border: 1px solid #a3956d;
+  border: 1px solid $secondary-color;
   width: 30px;
   margin-bottom: 10px;
 }
@@ -30,5 +32,5 @@
 .projects-header {
   margin-bottom: 15px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #a3956d;
+  border-bottom: 1px solid $secondary-color;
 }

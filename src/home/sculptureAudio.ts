@@ -1,3 +1,11 @@
+import {
+  ContrabassFluteNote,
+  findNearestContrabassNote,
+  frequencyToMidi,
+  loadContrabassFluteSamples,
+  playbackRateForMidi,
+} from './contrabassFluteSamples';
+
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export type CenterApproachSide = 'left' | 'right' | 'top' | 'bottom';
@@ -29,6 +37,18 @@ export class SculptureAudio {
 
   private fluteVibratoGain: GainNode | null = null;
 
+  private contrabassNotes: ContrabassFluteNote[] = [];
+
+  private contrabassLoaded = false;
+
+  private contrabassLoopGain: GainNode | null = null;
+
+  private contrabassLoopFilter: BiquadFilterNode | null = null;
+
+  private contrabassLoopSource: AudioBufferSourceNode | null = null;
+
+  private activeContrabassMidi: number | null = null;
+
   private fluteToneTarget = 73.42;
 
   private lastMetallic = 0;
@@ -40,6 +60,10 @@ export class SculptureAudio {
   private lastFlutter = 0;
 
   private lastCenterTechnique = 0;
+
+  private lastNodePitchMidi: number | null = null;
+
+  private lastNodePitchTime = 0;
 
   private enabled = false;
 
@@ -61,6 +85,33 @@ export class SculptureAudio {
     this.startCrackleBed();
     this.startFluteBreathBed();
     this.startFluteTone();
+    void this.loadContrabassSamples();
+  }
+
+  private async loadContrabassSamples(): Promise<void> {
+    if (!this.context || this.disposed) return;
+
+    try {
+      this.contrabassNotes = await loadContrabassFluteSamples(this.context);
+      this.contrabassLoaded = true;
+      this.stopFluteSynthTone();
+    } catch {
+      this.contrabassLoaded = false;
+    }
+  }
+
+  private stopFluteSynthTone(): void {
+    if (this.fluteToneOsc) {
+      this.fluteToneOsc.stop();
+      this.fluteToneOsc.disconnect();
+      this.fluteToneOsc = null;
+    }
+
+    if (this.fluteVibratoOsc) {
+      this.fluteVibratoOsc.stop();
+      this.fluteVibratoOsc.disconnect();
+      this.fluteVibratoOsc = null;
+    }
   }
 
   private setupGraph(): void {
@@ -97,6 +148,17 @@ export class SculptureAudio {
     this.fluteToneGain = context.createGain();
     this.fluteToneGain.gain.value = 0.0001;
     this.fluteToneGain.connect(this.masterGain);
+
+    this.contrabassLoopGain = context.createGain();
+    this.contrabassLoopGain.gain.value = 0.0001;
+
+    this.contrabassLoopFilter = context.createBiquadFilter();
+    this.contrabassLoopFilter.type = 'lowpass';
+    this.contrabassLoopFilter.frequency.value = 1400;
+    this.contrabassLoopFilter.Q.value = 0.5;
+
+    this.contrabassLoopGain.connect(this.contrabassLoopFilter);
+    this.contrabassLoopFilter.connect(this.masterGain);
 
     this.masterGain.connect(context.destination);
   }
@@ -218,6 +280,117 @@ export class SculptureAudio {
       now,
       0.14
     );
+
+    this.updateContrabassSampleLayer(active, motion, pointerX, pointerY);
+  }
+
+  private updateContrabassSampleLayer(active: number, motion: number, pointerX: number, pointerY: number): void {
+    if (!this.contrabassLoaded || !this.context || !this.contrabassLoopGain || !this.contrabassNotes.length) {
+      return;
+    }
+
+    const now = this.context.currentTime;
+    const targetGain = active > 0.08 ? 0.02 + active * 0.12 + motion * 0.04 : 0.0001;
+
+    if (targetGain <= 0.0002) {
+      this.contrabassLoopGain.gain.setTargetAtTime(0.0001, now, 0.12);
+      return;
+    }
+
+    const targetMidi = frequencyToMidi(this.pointerToFluteFrequency(pointerX, pointerY));
+    const nearest = findNearestContrabassNote(this.contrabassNotes, targetMidi);
+    const playbackRate = playbackRateForMidi(nearest.midi, targetMidi);
+
+    if (this.activeContrabassMidi !== nearest.midi) {
+      this.startContrabassLoop(nearest, playbackRate);
+      this.activeContrabassMidi = nearest.midi;
+    } else if (this.contrabassLoopSource) {
+      this.contrabassLoopSource.playbackRate.setTargetAtTime(playbackRate, now, 0.1);
+    }
+
+    this.contrabassLoopGain.gain.setTargetAtTime(targetGain, now, 0.12);
+    this.contrabassLoopFilter?.frequency.setTargetAtTime(900 + motion * 700 + active * 500, now, 0.14);
+  }
+
+  private startContrabassLoop(note: ContrabassFluteNote, playbackRate: number): void {
+    if (!this.context || !this.contrabassLoopGain) return;
+
+    this.stopContrabassLoop();
+
+    const source = this.context.createBufferSource();
+    source.buffer = note.buffer;
+    source.loop = true;
+    source.loopStart = note.buffer.duration * 0.18;
+    source.loopEnd = note.buffer.duration * 0.82;
+    source.playbackRate.value = playbackRate;
+    source.connect(this.contrabassLoopGain);
+    source.start(0, note.buffer.duration * 0.12);
+    this.contrabassLoopSource = source;
+  }
+
+  private stopContrabassLoop(): void {
+    if (!this.contrabassLoopSource) return;
+
+    try {
+      this.contrabassLoopSource.stop();
+    } catch {
+      // Source may already be stopped.
+    }
+
+    this.contrabassLoopSource.disconnect();
+    this.contrabassLoopSource = null;
+    this.activeContrabassMidi = null;
+  }
+
+  private playContrabassStaccato(intensity: number, pointerX: number, pointerY: number): void {
+    const targetMidi = frequencyToMidi(this.pointerToFluteFrequency(pointerX, pointerY));
+    this.playContrabassPitchClear(targetMidi, intensity, pointerX, 0.55);
+  }
+
+  triggerNodePitch(midi: number, intensity: number, pan: number): void {
+    if (!this.enabled || !this.context) return;
+
+    const now = performance.now();
+    if (midi === this.lastNodePitchMidi && now - this.lastNodePitchTime < 140) return;
+
+    this.lastNodePitchMidi = midi;
+    this.lastNodePitchTime = now;
+    this.playContrabassPitchClear(midi, intensity, pan, 0.92);
+  }
+
+  playContrabassPitchClear(midi: number, intensity: number, pan: number, sustainRatio = 0.92): void {
+    if (!this.contrabassLoaded || !this.context || !this.masterGain || !this.contrabassNotes.length) return;
+
+    const { context } = this;
+    const now = context.currentTime;
+    const nearest = findNearestContrabassNote(this.contrabassNotes, midi);
+    const playbackRate = playbackRateForMidi(nearest.midi, midi);
+    const duration = Math.min(nearest.buffer.duration * sustainRatio, 2.2);
+
+    const source = context.createBufferSource();
+    source.buffer = nearest.buffer;
+    source.playbackRate.value = playbackRate;
+
+    const gain = context.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.1 + intensity * 0.18, now + 0.02);
+    gain.gain.setValueAtTime(0.08 + intensity * 0.14, now + duration * 0.65);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    const filter = context.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1600;
+
+    const panner = context.createStereoPanner();
+    panner.pan.value = clamp(pan, -1, 1);
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(panner);
+    panner.connect(this.masterGain);
+
+    source.start(now);
+    source.stop(now + duration + 0.02);
   }
 
   triggerTouchBurst(intensity: number, pointerX: number, pointerY: number): void {
@@ -239,6 +412,7 @@ export class SculptureAudio {
     const level = clamp(intensity, 0.5, 1);
 
     this.playSlap(level, pointerX, pointerY);
+    this.playContrabassStaccato(level, pointerX, pointerY);
     window.setTimeout(() => this.playKeyClick(pointerX, true), 10);
     window.setTimeout(() => this.playJetWhistle(level * 0.85, pointerX, pointerY), 24);
   }
@@ -771,6 +945,8 @@ export class SculptureAudio {
       this.fluteVibratoOsc.disconnect();
       this.fluteVibratoOsc = null;
     }
+
+    this.stopContrabassLoop();
 
     if (this.context) {
       void this.context.close();

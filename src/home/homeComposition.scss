@@ -1,0 +1,123 @@
+@import '../assets/styles/variables';
+
+.home-composition {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.home-golden-spiral {
+  position: absolute;
+  right: -6%;
+  top: 14%;
+  width: min(48vw, 34rem);
+  height: min(48vw, 34rem);
+  opacity: 0.14;
+  filter: blur(0.2px);
+  animation: home-spiral-drift 32s ease-in-out infinite alternate;
+}
+
+.home-golden-spiral-path {
+  fill: none;
+  stroke-width: 0.65;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: home-spiral-draw 5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.home-golden-node {
+  fill: rgba($pearl-champagne, 0.85);
+  animation: home-node-pulse 4s ease-in-out infinite;
+}
+
+.home-composition-orbit {
+  position: absolute;
+  border: 1px solid rgba($secondary-color, 0.1);
+  border-radius: 50%;
+  animation: home-orbit-spin 56s linear infinite;
+}
+
+.home-composition-orbit--one {
+  left: 10%;
+  bottom: 24%;
+  width: phi(6);
+  height: phi(6);
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.home-composition-orbit--two {
+  right: 18%;
+  top: 12%;
+  width: phi(4);
+  height: phi(4);
+  animation-direction: reverse;
+  animation-duration: 42s;
+  opacity: 0.45;
+}
+
+@keyframes home-spiral-drift {
+  from {
+    transform: rotate(-3deg) translateY(0);
+  }
+
+  to {
+    transform: rotate(4deg) translateY(phi(-1));
+  }
+}
+
+@keyframes home-spiral-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes home-node-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes home-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-golden-spiral,
+  .home-golden-spiral-path,
+  .home-golden-node,
+  .home-composition-orbit {
+    animation: none;
+  }
+
+  .home-golden-spiral-path {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-golden-spiral {
+    right: -24%;
+    top: 32%;
+    opacity: 0.08;
+  }
+
+  .home-composition-orbit--one {
+    display: none;
+  }
+}

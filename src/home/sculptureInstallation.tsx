@@ -1,4 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { goldenPower } from './goldenRatio';
+import { CONTRABASS_MAX_MIDI, CONTRABASS_MIN_MIDI } from './contrabassFluteSamples';
+import { pearlRgba } from './installationColors';
 import { CenterApproachSide, SculptureAudio } from './sculptureAudio';
 import './sculptureInstallation.scss';
 
@@ -11,6 +14,7 @@ interface Point3D {
   z: number;
   ring: number;
   phase: number;
+  midi: number;
 }
 
 interface Pointer {
@@ -28,8 +32,15 @@ interface CenterImpact {
   strength: number;
 }
 
-const NODE_COUNT = 96;
-const RING_COUNT = 3;
+const NODE_COUNT = 128;
+const RING_COUNT = 4;
+const RING_NODES = 32;
+const RING_RADIUS_BASE = 150;
+const RING_RADIUS_GROWTH = 0.68;
+const SCULPTURE_SCALE = 1.65;
+const SCULPTURE_EXTENT_X = 280;
+const SCULPTURE_EXTENT_Y = 185;
+const POINTER_REACH = 0.62;
 
 const createSculpture = (): Point3D[] => {
   const points: Point3D[] = [];
@@ -39,7 +50,7 @@ const createSculpture = (): Point3D[] => {
     const t = index / (NODE_COUNT - 1);
     const inclination = Math.acos(1 - 2 * t);
     const azimuth = golden * index;
-    const radius = 118 + Math.sin(index * 0.7) * 18;
+    const radius = (118 + Math.sin(index * 0.7) * 18) * SCULPTURE_SCALE;
 
     points.push({
       bx: radius * Math.sin(inclination) * Math.cos(azimuth),
@@ -50,20 +61,20 @@ const createSculpture = (): Point3D[] => {
       z: 0,
       ring: -1,
       phase: index * 0.31,
+      midi: CONTRABASS_MIN_MIDI,
     });
   }
 
   for (let ring = 0; ring < RING_COUNT; ring += 1) {
-    const ringNodes = 28;
-    const ringRadius = 150 + ring * 34;
+    const ringRadius = RING_RADIUS_BASE * SCULPTURE_SCALE * goldenPower(ring * RING_RADIUS_GROWTH);
     const tiltX = ring * 0.85 + 0.4;
     const tiltY = ring * 1.1 + 0.2;
 
-    for (let index = 0; index < ringNodes; index += 1) {
-      const angle = (index / ringNodes) * Math.PI * 2;
+    for (let index = 0; index < RING_NODES; index += 1) {
+      const angle = (index / RING_NODES) * Math.PI * 2;
       const x = Math.cos(angle) * ringRadius;
       const z = Math.sin(angle) * ringRadius;
-      const y = Math.sin(angle * 2 + ring) * 16;
+      const y = Math.sin(angle * 2 + ring) * 16 * SCULPTURE_SCALE;
 
       points.push({
         bx: x,
@@ -74,16 +85,35 @@ const createSculpture = (): Point3D[] => {
         z: 0,
         ring,
         phase: index * 0.22 + ring,
+        midi: CONTRABASS_MIN_MIDI,
       });
     }
   }
 
+  assignContrabassPitches(points);
+
   return points;
+};
+
+const assignContrabassPitches = (points: Point3D[]): void => {
+  const pitchSpan = CONTRABASS_MAX_MIDI - CONTRABASS_MIN_MIDI;
+  const ranked = points
+    .map((point, index) => ({
+      point,
+      index,
+      height: point.by * 0.7 + point.bz * 0.3 + (point.ring >= 0 ? point.ring * 18 : 0),
+    }))
+    .sort((a, b) => a.height - b.height || a.index - b.index);
+
+  ranked.forEach((entry, rank) => {
+    const normalized = rank / Math.max(1, ranked.length - 1);
+    entry.point.midi = Math.round(CONTRABASS_MIN_MIDI + normalized * pitchSpan);
+  });
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-const CENTER_ZONE = 0.34;
+const CENTER_ZONE = goldenPower(-2);
 
 const directionFromSide = (side: CenterApproachSide): { dirX: number; dirY: number } => {
   switch (side) {
@@ -110,6 +140,7 @@ export const SculptureInstallation: React.FC = () => {
   const audioRef = useRef<SculptureAudio | null>(null);
   const centerImpactRef = useRef<CenterImpact>({ dirX: 0, dirY: 0, side: 'left', strength: 0 });
   const lastCenterHitRef = useRef(0);
+  const projectedScreenRef = useRef<Array<{ px: number; py: number; midi: number }>>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -153,6 +184,24 @@ export const SculptureInstallation: React.FC = () => {
     const handlePointerDown = (event: PointerEvent) => {
       updatePointer(event.clientX, event.clientY, 1.6);
       void audio.ensureStarted().then(() => {
+        const rect = canvas.getBoundingClientRect();
+        const pointerPx = rect.width * 0.5 + pointer.x * rect.width * POINTER_REACH;
+        const pointerPy = rect.height * 0.5 + pointer.y * rect.height * POINTER_REACH;
+        let closestMidi: number | null = null;
+        let closestDistance = Infinity;
+
+        for (const node of projectedScreenRef.current) {
+          const distance = Math.hypot(node.px - pointerPx, node.py - pointerPy);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestMidi = node.midi;
+          }
+        }
+
+        if (closestMidi !== null) {
+          audio.triggerNodePitch(closestMidi, 0.95, pointer.x);
+        }
+
         if (event.pointerType === 'mouse') {
           audio.triggerMouseClickSounds(0.92, pointer.x, pointer.y);
         } else {
@@ -219,7 +268,7 @@ export const SculptureInstallation: React.FC = () => {
       const height = rect.height;
       const centerX = width * 0.5;
       const centerY = height * 0.5;
-      const perspective = Math.min(width, height) * 1.35;
+      const perspective = Math.min(width, height) * 0.88;
 
       timeRef.current += reducedMotion ? 0.004 : 0.012;
       const time = timeRef.current;
@@ -255,13 +304,17 @@ export const SculptureInstallation: React.FC = () => {
         const pulse = Math.sin(time * 1.6 + point.phase) * (point.ring >= 0 ? 10 : 6);
         const breathe = Math.sin(time * 0.7 + point.phase * 0.5) * 4;
 
-        const pointerPullX = pointer.x * 42 * pointer.active;
-        const pointerPullY = -pointer.y * 42 * pointer.active;
-        const pointerPullZ = (1 - Math.hypot(pointer.x, pointer.y)) * 26 * pointer.active;
+        const pointerPullX = pointer.x * 62 * pointer.active;
+        const pointerPullY = -pointer.y * 62 * pointer.active;
+        const pointerPullZ = (1 - Math.hypot(pointer.x, pointer.y)) * 38 * pointer.active;
 
-        const sectorAlign = clamp((point.bx / 170) * centerImpact.dirX + (point.by / 110) * centerImpact.dirY, 0, 1);
+        const sectorAlign = clamp(
+          (point.bx / SCULPTURE_EXTENT_X) * centerImpact.dirX + (point.by / SCULPTURE_EXTENT_Y) * centerImpact.dirY,
+          0,
+          1
+        );
         const sectorExpand = sectorAlign * centerImpact.strength;
-        const expandPush = sectorExpand * 145;
+        const expandPush = sectorExpand * 195;
 
         let x = point.bx + pointerPullX + pulse + centerImpact.dirX * expandPush;
         const y = point.by + pointerPullY + breathe + centerImpact.dirY * expandPush * 0.82;
@@ -292,11 +345,36 @@ export const SculptureInstallation: React.FC = () => {
           px: centerX + x3 * scale,
           py: centerY + y3 * scale,
           depth: z2,
-          size: (point.ring >= 0 ? 2.2 : 2.8) * scale + pointer.active * 0.8 + sectorExpand * 4.2,
+          size: (point.ring >= 0 ? 2.4 : 3.1) * scale + pointer.active * 0.9 + sectorExpand * 4.8,
         });
       }
 
       projected.sort((a, b) => a.depth - b.depth);
+      projectedScreenRef.current = projected.map((node) => ({
+        px: node.px,
+        py: node.py,
+        midi: node.midi,
+      }));
+
+      const pointerPx = centerX + pointer.x * width * POINTER_REACH;
+      const pointerPy = centerY + pointer.y * height * POINTER_REACH;
+      let closestNode: typeof projected[number] | null = null;
+      let closestDistance = Infinity;
+
+      for (const node of projected) {
+        const distance = Math.hypot(node.px - pointerPx, node.py - pointerPy);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestNode = node;
+        }
+      }
+
+      const nodeHitRadius = 44 + pointer.active * 28;
+
+      if (closestNode && closestDistance < nodeHitRadius && pointer.active > 0.06 && !reducedMotion) {
+        const pitchIntensity = clamp(1 - closestDistance / nodeHitRadius, 0.4, 1);
+        audio.triggerNodePitch(closestNode.midi, pitchIntensity, pointer.x);
+      }
 
       context.clearRect(0, 0, width, height);
 
@@ -306,14 +384,14 @@ export const SculptureInstallation: React.FC = () => {
         20,
         centerX,
         centerY,
-        Math.max(width, height) * 0.55
+        Math.max(width, height) * 0.72
       );
-      gradient.addColorStop(0, 'rgba(163, 149, 109, 0.08)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      gradient.addColorStop(0, pearlRgba('glow', 0.1));
+      gradient.addColorStop(1, 'rgba(248, 245, 240, 0)');
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
-      const linkDistance = 92 + centerImpact.strength * 78;
+      const linkDistance = 118 + centerImpact.strength * 92;
 
       for (let i = 0; i < projected.length; i += 1) {
         for (let j = i + 1; j < projected.length; j += 1) {
@@ -327,31 +405,45 @@ export const SculptureInstallation: React.FC = () => {
 
           const depthFade = 1 - (a.depth + b.depth + perspective * 2) / (perspective * 4);
           const lineBoost =
-            clamp((a.bx / 170) * centerImpact.dirX + (a.by / 110) * centerImpact.dirY, 0, 1) +
-            clamp((b.bx / 170) * centerImpact.dirX + (b.by / 110) * centerImpact.dirY, 0, 1);
+            clamp(
+              (a.bx / SCULPTURE_EXTENT_X) * centerImpact.dirX + (a.by / SCULPTURE_EXTENT_Y) * centerImpact.dirY,
+              0,
+              1
+            ) +
+            clamp(
+              (b.bx / SCULPTURE_EXTENT_X) * centerImpact.dirX + (b.by / SCULPTURE_EXTENT_Y) * centerImpact.dirY,
+              0,
+              1
+            );
           const alpha = (1 - distance / linkDistance) * depthFade * (0.12 + pointer.active * 0.18 + lineBoost * 0.12);
 
           context.beginPath();
           context.moveTo(a.px, a.py);
           context.lineTo(b.px, b.py);
-          context.strokeStyle = `rgba(196, 184, 150, ${Math.max(0.04, alpha)})`;
+          context.strokeStyle = pearlRgba('line', Math.max(0.04, alpha));
           context.lineWidth = 0.6 + pointer.active * 0.5;
           context.stroke();
         }
       }
 
       for (const node of projected) {
-        const glow = 0.35 + pointer.active * 0.45;
+        const isActiveNode = closestNode === node && closestDistance < nodeHitRadius;
+        const glow = 0.35 + pointer.active * 0.45 + (isActiveNode ? 0.35 : 0);
         const alpha = clamp(0.2 + glow - node.depth / (perspective * 2.5), 0.15, 1);
+        const nodeSize = node.size + (isActiveNode ? 2.4 : 0);
 
         context.beginPath();
-        context.arc(node.px, node.py, node.size * 2.2, 0, Math.PI * 2);
-        context.fillStyle = `rgba(163, 149, 109, ${alpha * 0.18})`;
+        context.arc(node.px, node.py, nodeSize * 2.2, 0, Math.PI * 2);
+        context.fillStyle = pearlRgba('wire', alpha * (isActiveNode ? 0.32 : 0.18));
         context.fill();
 
         context.beginPath();
-        context.arc(node.px, node.py, node.size, 0, Math.PI * 2);
-        context.fillStyle = node.ring >= 0 ? `rgba(196, 184, 150, ${alpha})` : `rgba(163, 149, 109, ${alpha})`;
+        context.arc(node.px, node.py, nodeSize, 0, Math.PI * 2);
+        context.fillStyle = isActiveNode
+          ? pearlRgba('highlight', alpha)
+          : node.ring >= 0
+          ? pearlRgba('ring', alpha)
+          : pearlRgba('node', alpha);
         context.fill();
       }
 
@@ -368,31 +460,31 @@ export const SculptureInstallation: React.FC = () => {
         context.lineTo(tipX, tipY);
         context.lineTo(centerX + wingX, centerY + wingY);
         context.closePath();
-        context.fillStyle = `rgba(163, 149, 109, ${0.03 + centerImpact.strength * 0.1})`;
+        context.fillStyle = pearlRgba('wire', 0.03 + centerImpact.strength * 0.1);
         context.fill();
 
         context.beginPath();
         context.moveTo(centerX, centerY);
         context.lineTo(tipX, tipY);
-        context.strokeStyle = `rgba(196, 184, 150, ${0.08 + centerImpact.strength * 0.28})`;
+        context.strokeStyle = pearlRgba('line', 0.08 + centerImpact.strength * 0.28);
         context.lineWidth = 1 + centerImpact.strength * 2.2;
         context.stroke();
       }
 
       if (pointer.active > 0.05) {
-        const rippleX = centerX + pointer.x * width * 0.28;
-        const rippleY = centerY + pointer.y * height * 0.28;
-        const rippleRadius = 40 + pointer.active * 120 + Math.sin(time * 4) * 8;
+        const rippleX = centerX + pointer.x * width * 0.38;
+        const rippleY = centerY + pointer.y * height * 0.38;
+        const rippleRadius = 52 + pointer.active * 150 + Math.sin(time * 4) * 10;
 
         context.beginPath();
         context.arc(rippleX, rippleY, rippleRadius, 0, Math.PI * 2);
-        context.strokeStyle = `rgba(163, 149, 109, ${0.08 + pointer.active * 0.2})`;
+        context.strokeStyle = pearlRgba('wire', 0.08 + pointer.active * 0.2);
         context.lineWidth = 1;
         context.stroke();
 
         context.beginPath();
         context.arc(rippleX, rippleY, rippleRadius * 0.62, 0, Math.PI * 2);
-        context.strokeStyle = `rgba(196, 184, 150, ${0.05 + pointer.active * 0.12})`;
+        context.strokeStyle = pearlRgba('line', 0.05 + pointer.active * 0.12);
         context.lineWidth = 0.6;
         context.stroke();
       }

@@ -2,7 +2,7 @@
 
 .App {
   text-align: center;
-  background-color: variables.$primary-color-dark;
+  background-color: variables.$pearl-white;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -12,7 +12,7 @@
     flex-direction: column;
   }
   &-container {
-    background-color: variables.$primary-color-light;
+    background-color: variables.$pearl-shell;
     flex-grow: 1;
   }
 

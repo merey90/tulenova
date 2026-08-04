@@ -1,0 +1,35 @@
+$phi: 1.618033988749895;
+$phi-inv: 0.618033988749895;
+
+$phi-scale: (
+  -3: 0.236rem,
+  -2: 0.382rem,
+  -1: 0.618rem,
+  0: 1rem,
+  1: 1.618rem,
+  2: 2.618rem,
+  3: 4.236rem,
+  4: 6.854rem,
+  5: 11.09rem,
+  6: 17.94rem,
+  7: 29.03rem,
+  8: 46.98rem,
+  9: 76.02rem,
+);
+
+@function phi($step) {
+  @if map-has-key($phi-scale, $step) {
+    @return map-get($phi-scale, $step);
+  }
+
+  @warn 'Unknown phi step `#{$step}` — falling back to 1rem.';
+  @return 1rem;
+}
+
+@function phi-major($total) {
+  @return $total * $phi-inv;
+}
+
+@function phi-minor($total) {
+  @return $total - phi-major($total);
+}

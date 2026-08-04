@@ -1,11 +1,23 @@
 $assets-path: 'https://s3.eu-central-1.amazonaws.com/tulenova.com';
 
-$primary-color: #000; //424242
-$primary-color-dark: #1b1b1b;
-$primary-color-light: #6d6d6d;
-$secondary-color: #a3956d;
-$secondary-color-dark: #c97b63;
-$secondary-color-light: #ffddc1;
-$font-color: #fff;
-$font-color-faded: #6d6d6d;
-$font-on-secondary: #000;
+@import 'golden';
+@import 'museum-type';
+
+$pearl-white: #f8f5f0;
+$pearl-shell: #f3efe8;
+$pearl-cream: #ebe5dc;
+$pearl-champagne: #d4ccc2;
+$pearl-taupe: #b8aea4;
+$pearl-mink: #9a9188;
+$pearl-ink: #5c564f;
+$pearl-deep: #4a4540;
+
+$primary-color: $pearl-deep;
+$primary-color-dark: $pearl-ink;
+$primary-color-light: $pearl-mink;
+$secondary-color: $pearl-taupe;
+$secondary-color-dark: $pearl-mink;
+$secondary-color-light: $pearl-cream;
+$font-color: $pearl-white;
+$font-color-faded: $pearl-mink;
+$font-on-secondary: $pearl-deep;
