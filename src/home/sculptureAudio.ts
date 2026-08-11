@@ -1,7 +1,5 @@
 import {
   ContrabassFluteNote,
-  CONTRABASS_MAX_MIDI,
-  CONTRABASS_MIN_MIDI,
   findNearestContrabassNote,
   frequencyToMidi,
   loadContrabassFluteSamples,
@@ -1281,15 +1279,14 @@ export class SculptureAudio {
     const technique = CENTER_TECHNIQUE_MAP[side];
     const markerIndex = this.centerTechniqueIndex;
     this.centerTechniqueIndex += 1;
-    const point = quadPointFromSide(side);
 
     if (this.performanceLoaded) {
-      this.seekPerformanceToTechnique(technique, markerIndex, level, point.x, point.y);
-      this.setHoverQuadPosition(point.x, point.y);
+      this.seekPerformanceToTechnique(technique, markerIndex, level, pointerX, pointerY);
+      this.setHoverQuadPosition(pointerX, pointerY);
       return;
     }
 
-    this.playRecordedTechniqueFallback(technique, level, point.x, point.y);
+    this.playRecordedTechniqueFallback(technique, level, pointerX, pointerY);
   }
 
   getApproachSideFromVelocity(vx: number, vy: number, fallbackSpeed = 0): CenterApproachSide | null {
