@@ -37,15 +37,29 @@ interface CenterImpact {
 const NODE_COUNT = 128;
 const RING_COUNT = 4;
 const RING_NODES = 32;
-const RING_RADIUS_BASE = 182;
-const RING_RADIUS_STEP = 42;
-const SCULPTURE_SCALE = 2.05;
-const SCULPTURE_EXTENT_X = 360;
-const SCULPTURE_EXTENT_Y = 210;
-const HORIZONTAL_STRETCH = 1.2;
-const POINTER_REACH = 0.78;
-const NODE_HOVER_RADIUS = 52;
-const EDGE_ZONE = 0.66;
+const RING_RADIUS_BASE = 210;
+const RING_RADIUS_STEP = 50;
+const SCULPTURE_SCALE = 2.48;
+const SCULPTURE_EXTENT_X = 450;
+const SCULPTURE_EXTENT_Y = 255;
+const HORIZONTAL_STRETCH = 1.52;
+const VERTICAL_STRETCH = 1.18;
+const POINTER_REACH = 0.96;
+const NODE_HOVER_RADIUS = 56;
+const EDGE_ZONE = 0.54;
+const SPATIAL_EDGE_STRETCH_X = 1.18;
+const SPATIAL_EDGE_STRETCH_Y = 1.14;
+
+const stretchSpatialCoord = (value: number, axis: 'x' | 'y') =>
+  clamp(value * (axis === 'x' ? SPATIAL_EDGE_STRETCH_X : SPATIAL_EDGE_STRETCH_Y), -1, 1);
+
+const pointerToSpatial = (x: number, y: number) => ({
+  x: stretchSpatialCoord(x, 'x'),
+  y: stretchSpatialCoord(y, 'y'),
+});
+
+const screenToSpatial = (px: number, py: number, width: number, height: number) =>
+  pointerToSpatial((px / width) * 2 - 1, (py / height) * 2 - 1);
 
 const resolveEdgeHover = (x: number, y: number): { intensity: number; midi: number } | null => {
   const absX = Math.abs(x);
@@ -154,7 +168,10 @@ const directionFromSide = (side: CenterApproachSide): { dirX: number; dirY: numb
   }
 };
 
-export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = INSTALLATION_DEFAULT_VOLUME }) => {
+export const SculptureInstallation: React.FC<{
+  volume?: number;
+  onAudioReady?: (startAudio: () => Promise<void>) => void;
+}> = ({ volume = INSTALLATION_DEFAULT_VOLUME, onAudioReady }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef<number>();
   const pointsRef = useRef<Point3D[]>(createSculpture());
@@ -162,9 +179,12 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
   const rotationRef = useRef({ x: 0.35, y: 0, z: 0 });
   const timeRef = useRef(0);
   const audioRef = useRef<SculptureAudio | null>(null);
+  const onAudioReadyRef = useRef(onAudioReady);
   const centerImpactRef = useRef<CenterImpact>({ dirX: 0, dirY: 0, side: 'left', strength: 0 });
   const lastCenterHitRef = useRef(0);
   const projectedScreenRef = useRef<Array<{ px: number; py: number; midi: number }>>([]);
+
+  onAudioReadyRef.current = onAudioReady;
 
   useEffect(() => {
     audioRef.current?.setMasterVolume(volume);
@@ -181,6 +201,7 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
     const audio = new SculptureAudio();
     audio.setMasterVolume(volume);
     audioRef.current = audio;
+    onAudioReadyRef.current?.(() => audio.ensureStarted());
     const points = pointsRef.current;
     const pointer = pointerRef.current;
     const rotation = rotationRef.current;
@@ -201,8 +222,8 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
 
       pointer.vx = nextX - pointer.x;
       pointer.vy = nextY - pointer.y;
-      pointer.x = clamp(nextX, -1.2, 1.2);
-      pointer.y = clamp(nextY, -1.2, 1.2);
+      pointer.x = clamp(nextX, -1.35, 1.35);
+      pointer.y = clamp(nextY, -1.35, 1.35);
       pointer.active = Math.min(1, pointer.active + intensity * 0.18);
     };
 
@@ -360,7 +381,7 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
         projected.push({
           ...point,
           px: centerX + x3 * scale * HORIZONTAL_STRETCH,
-          py: centerY + y3 * scale,
+          py: centerY + y3 * scale * VERTICAL_STRETCH,
           depth: z2,
           size: (point.ring >= 0 ? 2.4 : 3.1) * scale + pointer.active * 0.9 + sectorExpand * 4.8,
         });
@@ -390,8 +411,7 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
 
       if (!reducedMotion) {
         if (closestNode && closestDistance < nodeHitRadius) {
-          const nodeX = clamp((closestNode.px / width) * 2 - 1, -1, 1);
-          const nodeY = clamp((closestNode.py / height) * 2 - 1, -1, 1);
+          const spatial = screenToSpatial(closestNode.px, closestNode.py, width, height);
           const pitchIntensity = clamp(1 - closestDistance / nodeHitRadius, 0.55, 1);
 
           if (closestNode.ring >= 0 && closestNode.technique) {
@@ -401,22 +421,18 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
                 technique: closestNode.technique,
                 markerIndex: closestNode.techniqueMarkerIndex,
               },
-              nodeX,
-              nodeY,
+              spatial.x,
+              spatial.y,
               pitchIntensity
             );
           } else {
-            audio.updateNodeHover({ kind: 'pitch', midi: closestNode.midi }, nodeX, nodeY, pitchIntensity);
+            audio.updateNodeHover({ kind: 'pitch', midi: closestNode.midi }, spatial.x, spatial.y, pitchIntensity);
           }
         } else {
           const edgeHover = resolveEdgeHover(pointer.x, pointer.y);
           if (edgeHover && pointer.active > 0.04) {
-            audio.updateNodeHover(
-              { kind: 'pitch', midi: edgeHover.midi },
-              pointer.x,
-              pointer.y,
-              edgeHover.intensity
-            );
+            const spatial = pointerToSpatial(pointer.x, pointer.y);
+            audio.updateNodeHover({ kind: 'pitch', midi: edgeHover.midi }, spatial.x, spatial.y, edgeHover.intensity);
           } else {
             audio.updateNodeHover(null, 0, 0, 0);
           }
@@ -438,7 +454,7 @@ export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = 
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
-      const linkDistance = 148 + centerImpact.strength * 92;
+      const linkDistance = 178 + centerImpact.strength * 108;
 
       for (let i = 0; i < projected.length; i += 1) {
         for (let j = i + 1; j < projected.length; j += 1) {

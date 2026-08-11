@@ -1,12 +1,9 @@
 export const BASS_FLUTE_PERFORMANCE_URL = '/audio/bass-flute-performance.mp3';
 
-export const BASS_FLUTE_PERFORMANCE_DURATION_SEC = 697.99;
+export const BASS_FLUTE_PERFORMANCE_DURATION_SEC = 676;
 
-/** Audience applause begins around this point in the live recording. */
-export const PERFORMANCE_APPLAUSE_START_SEC = 687;
-
-/** Last second of playable performance material (flute only). */
-export const PERFORMANCE_PLAYABLE_END_SEC = 686;
+/** Last second of flute-only performance material (applause trimmed from file). */
+export const PERFORMANCE_PLAYABLE_END_SEC = 676;
 
 /** Max sustained hover loop length per marker. */
 export const PERFORMANCE_HOVER_SEGMENT_SEC = 18;
@@ -46,13 +43,16 @@ export const PITCH_MARKERS: Record<number, PitchMarker> = {
   57: { timeSec: 616.61, label: 'A3' },
 };
 
+const sanitizeMarkerTimes = (times: number[]): number[] =>
+  times.filter((timeSec) => timeSec < PERFORMANCE_PLAYABLE_END_SEC - 2);
+
 export const TECHNIQUE_MARKERS: Record<ExtendedTechnique, number[]> = {
-  'tongue-stop': [463.49, 544.16, 353.38, 605, 18, 105, 195, 275, 365, 445, 525],
-  multiphonic: [413.41, 606.67, 240.4, 243.46, 45, 130, 215, 300, 385, 470, 555],
-  'split-tone': [60, 145, 225, 305, 395, 480, 565],
-  'key-click': [12, 88, 164, 240, 320, 410, 500, 590],
-  slap: [24, 96, 180, 260, 350, 430, 520, 610],
-  'jet-whistle': [8, 72, 150, 230, 310, 390, 470, 550],
+  'tongue-stop': sanitizeMarkerTimes([463.49, 544.16, 353.38, 18, 105, 195, 275, 365, 445, 525]),
+  multiphonic: sanitizeMarkerTimes([413.41, 240.4, 243.46, 45, 130, 215, 300, 385, 470, 555]),
+  'split-tone': sanitizeMarkerTimes([60, 145, 225, 305, 395, 480, 565]),
+  'key-click': sanitizeMarkerTimes([12, 88, 164, 240, 320, 410, 500, 590]),
+  slap: sanitizeMarkerTimes([24, 96, 180, 260, 350, 430, 520]),
+  'jet-whistle': sanitizeMarkerTimes([8, 72, 150, 230, 310, 390, 470, 550]),
 };
 
 export const CENTER_TECHNIQUE_MAP: Record<'left' | 'right' | 'top' | 'bottom', ExtendedTechnique> = {
@@ -93,6 +93,9 @@ export const timeSecToPosition = (timeSec: number, durationSec = PERFORMANCE_PLA
   clamp(timeSec / durationSec, 0.02, 0.98);
 
 export const clampPerformanceTime = (timeSec: number): number => clamp(timeSec, 0, PERFORMANCE_PLAYABLE_END_SEC);
+
+export const performancePositionToTimeSec = (position: number): number =>
+  clampPerformanceTime(position * PERFORMANCE_PLAYABLE_END_SEC);
 
 export const hoverSegmentEndForTime = (timeSec: number): number =>
   Math.min(clampPerformanceTime(timeSec) + PERFORMANCE_HOVER_SEGMENT_SEC, PERFORMANCE_PLAYABLE_END_SEC);

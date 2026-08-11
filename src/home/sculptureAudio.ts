@@ -15,17 +15,29 @@ import {
   hoverSegmentEndForTime,
   midiToPerformancePosition,
   PERFORMANCE_PLAYABLE_END_SEC,
+  performancePositionToTimeSec,
   techniqueToPerformancePosition,
 } from './bassFlutePerformance';
 import { attachQuadStereoPanner, QuadStereoRouter, quadPointFromSide } from './quadStereo';
 
-const FLUTE_HOVER_GAIN = (intensity: number) => 0.44 + intensity * 0.68;
-const FLUTE_SPATIAL_SPREAD = 1.72;
-const PERFORMANCE_IMMERSION_SPREAD = 1.85;
-export const INSTALLATION_MASTER_OUTPUT = 0.72;
-export const INSTALLATION_DEFAULT_VOLUME = 0.92;
+const FLUTE_HOVER_GAIN = (intensity: number) => 0.64 + intensity * 0.88;
+const FLUTE_SPATIAL_SPREAD = 2.05;
+const PERFORMANCE_IMMERSION_SPREAD = 2.9;
+const PERFORMANCE_ROOM_SPREAD = 3;
+const SPATIAL_EDGE_STRETCH_X = 1.24;
+const SPATIAL_EDGE_STRETCH_Y = 1.18;
+const PERFORMANCE_LIVE_LEVEL = 1.68;
+const PERFORMANCE_QUAD_DRY_LEVEL = 1.38;
+const PERFORMANCE_QUAD_ROOM_LEVEL = 1.62;
+export const INSTALLATION_MASTER_OUTPUT = 1.08;
+export const INSTALLATION_DEFAULT_VOLUME = 1;
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const stretchEdgeSpatial = (x: number, y: number): { x: number; y: number } => ({
+  x: clamp(x * SPATIAL_EDGE_STRETCH_X, -1, 1),
+  y: clamp(y * SPATIAL_EDGE_STRETCH_Y, -1, 1),
+});
 
 export type CenterApproachSide = 'left' | 'right' | 'top' | 'bottom';
 
@@ -74,6 +86,12 @@ export class SculptureAudio {
 
   private performanceGain: GainNode | null = null;
 
+  private performanceLiveLevel: GainNode | null = null;
+
+  private performanceQuadDryLevel: GainNode | null = null;
+
+  private performanceQuadRoomLevel: GainNode | null = null;
+
   private performanceToneFilter: BiquadFilterNode | null = null;
 
   private performancePresence: BiquadFilterNode | null = null;
@@ -82,7 +100,15 @@ export class SculptureAudio {
 
   private performanceAmbienceSend: GainNode | null = null;
 
+  private performanceReverbSend: GainNode | null = null;
+
+  private performanceWarmth: BiquadFilterNode | null = null;
+
+  private performanceAir: BiquadFilterNode | null = null;
+
   private performanceQuad: QuadStereoRouter | null = null;
+
+  private performanceQuadRoom: QuadStereoRouter | null = null;
 
   private fieldQuad: QuadStereoRouter | null = null;
 
@@ -138,6 +164,8 @@ export class SculptureAudio {
 
   private performanceSpatialY = 0;
 
+  private spatialDriftPhase = 0;
+
   private enabled = false;
 
   private disposed = false;
@@ -179,65 +207,149 @@ export class SculptureAudio {
     this.performanceGain = this.context.createGain();
     this.performanceGain.gain.value = 0.0001;
 
+    this.performanceLiveLevel = this.context.createGain();
+    this.performanceLiveLevel.gain.value = PERFORMANCE_LIVE_LEVEL;
+
+    this.performanceQuadDryLevel = this.context.createGain();
+    this.performanceQuadDryLevel.gain.value = PERFORMANCE_QUAD_DRY_LEVEL;
+
+    this.performanceQuadRoomLevel = this.context.createGain();
+    this.performanceQuadRoomLevel.gain.value = PERFORMANCE_QUAD_ROOM_LEVEL;
+
+    this.performanceWarmth = this.context.createBiquadFilter();
+    this.performanceWarmth.type = 'lowshelf';
+    this.performanceWarmth.frequency.value = 190;
+    this.performanceWarmth.gain.value = 2.4;
+
     this.performanceToneFilter = this.context.createBiquadFilter();
     this.performanceToneFilter.type = 'lowpass';
-    this.performanceToneFilter.frequency.value = 5400;
-    this.performanceToneFilter.Q.value = 0.58;
+    this.performanceToneFilter.frequency.value = 5800;
+    this.performanceToneFilter.Q.value = 0.52;
 
     this.performancePresence = this.context.createBiquadFilter();
     this.performancePresence.type = 'peaking';
-    this.performancePresence.frequency.value = 880;
-    this.performancePresence.Q.value = 0.9;
-    this.performancePresence.gain.value = 3.2;
+    this.performancePresence.frequency.value = 860;
+    this.performancePresence.Q.value = 0.85;
+    this.performancePresence.gain.value = 3.4;
+
+    this.performanceAir = this.context.createBiquadFilter();
+    this.performanceAir.type = 'highshelf';
+    this.performanceAir.frequency.value = 5200;
+    this.performanceAir.gain.value = 2.8;
 
     this.performanceCompressor = this.context.createDynamicsCompressor();
-    this.performanceCompressor.threshold.value = -24;
-    this.performanceCompressor.knee.value = 20;
-    this.performanceCompressor.ratio.value = 3;
-    this.performanceCompressor.attack.value = 0.005;
-    this.performanceCompressor.release.value = 0.16;
+    this.performanceCompressor.threshold.value = -26;
+    this.performanceCompressor.knee.value = 22;
+    this.performanceCompressor.ratio.value = 2.8;
+    this.performanceCompressor.attack.value = 0.004;
+    this.performanceCompressor.release.value = 0.2;
 
     this.performanceAmbienceSend = this.context.createGain();
-    this.performanceAmbienceSend.gain.value = 0.24;
+    this.performanceAmbienceSend.gain.value = 0.28;
+
+    this.performanceReverbSend = this.context.createGain();
+    this.performanceReverbSend.gain.value = 0.32;
 
     const ambDelayA = this.context.createDelay(0.14);
     ambDelayA.delayTime.value = 0.041;
     const ambDelayB = this.context.createDelay(0.2);
     ambDelayB.delayTime.value = 0.073;
+    const ambDelayC = this.context.createDelay(0.26);
+    ambDelayC.delayTime.value = 0.109;
     const ambFeedback = this.context.createGain();
-    ambFeedback.gain.value = 0.36;
+    ambFeedback.gain.value = 0.42;
     const ambDamp = this.context.createBiquadFilter();
     ambDamp.type = 'lowpass';
-    ambDamp.frequency.value = 2800;
+    ambDamp.frequency.value = 3200;
     const ambWet = this.context.createGain();
-    ambWet.gain.value = 0.52;
+    ambWet.gain.value = 0.72;
+
+    const hallConvolver = this.context.createConvolver();
+    hallConvolver.buffer = this.createHallImpulseBuffer();
+    hallConvolver.normalize = false;
+    const hallWet = this.context.createGain();
+    hallWet.gain.value = 0.66;
+    const hallDamp = this.context.createBiquadFilter();
+    hallDamp.type = 'lowpass';
+    hallDamp.frequency.value = 3600;
 
     this.performanceQuad = new QuadStereoRouter(this.context, this.masterGain, {
-      rlDelaySec: 0.031,
-      rrDelaySec: 0.038,
-      rearMix: 0.82,
-      frontBoost: 1.12,
-      rearCutoffHz: 2200,
+      rlDelaySec: 0.044,
+      rrDelaySec: 0.053,
+      rearMix: 0.96,
+      frontBoost: 1.2,
+      rearCutoffHz: 2600,
+      sharpenPower: 0.38,
     });
 
-    this.performanceSource.connect(this.performanceToneFilter);
+    this.performanceQuadRoom = new QuadStereoRouter(this.context, this.masterGain, {
+      rlDelaySec: 0.058,
+      rrDelaySec: 0.068,
+      rearMix: 1.12,
+      frontBoost: 0.84,
+      rearCutoffHz: 3000,
+      sharpenPower: 0.32,
+    });
+
+    this.performanceSource.connect(this.performanceWarmth);
+    this.performanceWarmth.connect(this.performanceToneFilter);
     this.performanceToneFilter.connect(this.performancePresence);
-    this.performancePresence.connect(this.performanceCompressor);
-    this.performanceCompressor.connect(this.performanceGain);
-    this.performanceGain.connect(this.performanceQuad.input);
+    this.performancePresence.connect(this.performanceAir);
+    this.performanceAir.connect(this.performanceCompressor);
+    this.performanceCompressor.connect(this.performanceLiveLevel);
+    this.performanceLiveLevel.connect(this.performanceGain);
+    this.performanceGain.connect(this.performanceQuadDryLevel);
+    this.performanceQuadDryLevel.connect(this.performanceQuad.input);
 
     this.performanceGain.connect(this.performanceAmbienceSend);
     this.performanceAmbienceSend.connect(ambDelayA);
     ambDelayA.connect(ambDelayB);
-    ambDelayB.connect(ambFeedback);
+    ambDelayB.connect(ambDelayC);
+    ambDelayC.connect(ambFeedback);
     ambFeedback.connect(ambDelayA);
-    ambDelayB.connect(ambDamp);
+    ambDelayC.connect(ambDamp);
     ambDamp.connect(ambWet);
-    ambWet.connect(this.performanceQuad.input);
+    ambWet.connect(this.performanceQuadRoomLevel);
+
+    this.performanceGain.connect(this.performanceReverbSend);
+    this.performanceReverbSend.connect(hallConvolver);
+    hallConvolver.connect(hallDamp);
+    hallDamp.connect(hallWet);
+    hallWet.connect(this.performanceQuadRoomLevel);
+    this.performanceQuadRoomLevel.connect(this.performanceQuadRoom.input);
 
     this.performanceElement.addEventListener('timeupdate', () => {
-      this.enforceHoverSegmentBounds();
+      this.enforcePerformancePlaybackLimit();
     });
+
+    this.performanceElement.addEventListener('ended', () => {
+      this.enforcePerformancePlaybackLimit();
+    });
+  }
+
+  private enforcePerformancePlaybackLimit(): void {
+    if (!this.performanceElement) return;
+
+    if (this.performanceElement.currentTime > PERFORMANCE_PLAYABLE_END_SEC - 0.08) {
+      this.performanceElement.pause();
+      this.performanceElement.currentTime = Math.max(0, PERFORMANCE_PLAYABLE_END_SEC - 0.12);
+    }
+
+    if (this.hoverSustainActive) {
+      this.enforceHoverSegmentBounds();
+      return;
+    }
+
+    if (this.performanceElement.currentTime >= PERFORMANCE_PLAYABLE_END_SEC - 0.12) {
+      this.performanceElement.pause();
+      this.performanceElement.currentTime = PERFORMANCE_PLAYABLE_END_SEC - 0.12;
+
+      if (this.context && this.performanceGain) {
+        const now = this.context.currentTime;
+        this.performanceGain.gain.cancelScheduledValues(now);
+        this.performanceGain.gain.setTargetAtTime(0.0001, now, 0.05);
+      }
+    }
   }
 
   private enforceHoverSegmentBounds(): void {
@@ -245,7 +357,7 @@ export class SculptureAudio {
 
     const current = this.performanceElement.currentTime;
 
-    if (current >= PERFORMANCE_PLAYABLE_END_SEC - 0.04) {
+    if (current >= PERFORMANCE_PLAYABLE_END_SEC - 0.12) {
       if (this.context && this.performanceGain) {
         const now = this.context.currentTime;
         const targetGain = FLUTE_HOVER_GAIN(this.hoverIntensity);
@@ -307,7 +419,7 @@ export class SculptureAudio {
       });
 
       this.performanceLoaded = true;
-      this.performanceTargetTime = clampPerformanceTime(this.performanceElement.duration * 0.18);
+      this.performanceTargetTime = clampPerformanceTime(PERFORMANCE_PLAYABLE_END_SEC * 0.18);
       this.performanceElement.currentTime = this.performanceTargetTime;
     } catch {
       this.performanceLoaded = false;
@@ -391,30 +503,71 @@ export class SculptureAudio {
     this.masterGain.connect(context.destination);
   }
 
+  private createHallImpulseBuffer(durationSec = 3.6): AudioBuffer {
+    if (!this.context) throw new Error('Audio context unavailable');
+
+    const sampleRate = this.context.sampleRate;
+    const length = Math.floor(sampleRate * durationSec);
+    const buffer = this.context.createBuffer(2, length, sampleRate);
+    const earlyReflections = [0.019, 0.031, 0.047, 0.061, 0.079, 0.098];
+
+    for (let channel = 0; channel < 2; channel += 1) {
+      const data = buffer.getChannelData(channel);
+
+      for (let index = 0; index < length; index += 1) {
+        const time = index / sampleRate;
+        let sample = (Math.random() * 2 - 1) * Math.exp(-time * 2.4);
+
+        for (const reflectionTime of earlyReflections) {
+          if (Math.abs(time - reflectionTime) < 0.00045) {
+            sample += (channel === 0 ? 0.34 : 0.28) * (1 - reflectionTime * 2.2);
+          }
+        }
+
+        data[index] = sample * (channel === 0 ? 1 : 0.93);
+      }
+    }
+
+    return buffer;
+  }
+
   private connectQuad(source: AudioNode, x: number, y: number): void {
     if (!this.context || !this.masterGain) return;
-    attachQuadStereoPanner(this.context, source, this.masterGain, { x, y }, FLUTE_SPATIAL_SPREAD);
+    const point = stretchEdgeSpatial(x, y);
+    attachQuadStereoPanner(this.context, source, this.masterGain, point, FLUTE_SPATIAL_SPREAD);
   }
 
   private isPerformancePlaying(): boolean {
     return Boolean(
-      this.performanceLoaded && this.performanceElement && !this.performanceElement.paused && !this.performanceElement.ended
+      this.performanceLoaded &&
+        this.performanceElement &&
+        !this.performanceElement.paused &&
+        !this.performanceElement.ended
     );
   }
 
   private updatePerformanceQuadPosition(x: number, y: number, time: number): void {
-    this.performanceSpatialX = x;
-    this.performanceSpatialY = y;
-    this.performanceQuad?.setPosition(x, y, time, PERFORMANCE_IMMERSION_SPREAD);
+    const point = stretchEdgeSpatial(x, y);
+    this.performanceSpatialX = point.x;
+    this.performanceSpatialY = point.y;
+    this.performanceQuad?.setPosition(point.x, point.y, time, PERFORMANCE_IMMERSION_SPREAD);
+    const roomX = clamp(point.x * 0.82, -1, 1);
+    const roomY = clamp(point.y + 0.58, -1, 1);
+    this.performanceQuadRoom?.setPosition(roomX, roomY, time, PERFORMANCE_ROOM_SPREAD);
   }
 
   private syncPerformanceSpatialization(pointerX: number, pointerY: number, time: number): void {
     if (!this.performanceLoaded || !this.performanceQuad) return;
 
     if (this.hoverSustainActive) {
-      this.updatePerformanceQuadPosition(this.hoverQuadX, this.hoverQuadY, time);
+      this.spatialDriftPhase += 0.021;
+      const driftX = clamp(this.hoverQuadX + Math.sin(this.spatialDriftPhase) * 0.22, -1, 1);
+      const driftY = clamp(this.hoverQuadY + Math.cos(this.spatialDriftPhase * 0.79) * 0.16, -1, 1);
+      this.updatePerformanceQuadPosition(driftX, driftY, time);
       return;
     }
+
+    this.spatialDriftPhase = 0;
 
     if (this.isPerformancePlaying()) {
       this.updatePerformanceQuadPosition(pointerX, pointerY, time);
@@ -424,10 +577,11 @@ export class SculptureAudio {
   private setHoverQuadPosition(x: number, y: number): void {
     if (!this.context) return;
 
-    this.hoverQuadX = x;
-    this.hoverQuadY = y;
-    this.updatePerformanceQuadPosition(x, y, this.context.currentTime);
-    this.fieldQuad?.setPosition(x, y, this.context.currentTime, FLUTE_SPATIAL_SPREAD);
+    const point = stretchEdgeSpatial(x, y);
+    this.hoverQuadX = point.x;
+    this.hoverQuadY = point.y;
+    this.updatePerformanceQuadPosition(point.x, point.y, this.context.currentTime);
+    this.fieldQuad?.setPosition(point.x, point.y, this.context.currentTime, FLUTE_SPATIAL_SPREAD);
   }
 
   private updateFieldQuadPosition(pointerX: number, pointerY: number, time: number): void {
@@ -436,7 +590,8 @@ export class SculptureAudio {
       return;
     }
 
-    this.fieldQuad?.setPosition(pointerX, pointerY, time, FLUTE_SPATIAL_SPREAD);
+    const point = stretchEdgeSpatial(pointerX, pointerY);
+    this.fieldQuad?.setPosition(point.x, point.y, time, FLUTE_SPATIAL_SPREAD);
   }
 
   private createNoiseBuffer(duration: number): AudioBuffer {
@@ -543,16 +698,31 @@ export class SculptureAudio {
 
     if (this.performanceToneFilter) {
       const openness = this.hoverSustainActive ? 1 : motion * 0.65 + active * 0.2;
-      this.performanceToneFilter.frequency.setTargetAtTime(4600 + openness * 3200, now, 0.16);
+      this.performanceToneFilter.frequency.setTargetAtTime(5000 + openness * 3600, now, 0.16);
+    }
+
+    if (this.performanceWarmth) {
+      const warmth = this.hoverSustainActive ? 2.8 : 1.8 + motion * 0.9;
+      this.performanceWarmth.gain.setTargetAtTime(warmth, now, 0.2);
+    }
+
+    if (this.performanceAir) {
+      const air = this.hoverSustainActive ? 3.4 : 2.2 + motion * 1.2;
+      this.performanceAir.gain.setTargetAtTime(air, now, 0.18);
     }
 
     if (this.performanceAmbienceSend) {
-      const ambience = this.hoverSustainActive ? 0.36 : this.isPerformancePlaying() ? 0.28 : 0.2;
+      const ambience = this.hoverSustainActive ? 0.48 : this.isPerformancePlaying() ? 0.4 : 0.3;
       this.performanceAmbienceSend.gain.setTargetAtTime(ambience, now, 0.22);
     }
 
+    if (this.performanceReverbSend) {
+      const reverb = this.hoverSustainActive ? 0.54 : this.isPerformancePlaying() ? 0.44 : 0.34;
+      this.performanceReverbSend.gain.setTargetAtTime(reverb, now, 0.24);
+    }
+
     if (this.performancePresence) {
-      const body = this.hoverSustainActive ? 3.6 : 2.4 + motion * 1.4;
+      const body = this.hoverSustainActive ? 4 : 2.6 + motion * 1.5;
       this.performancePresence.gain.setTargetAtTime(body, now, 0.18);
     }
 
@@ -595,9 +765,6 @@ export class SculptureAudio {
       window.clearTimeout(this.performancePauseTimer);
       this.performancePauseTimer = null;
     }
-
-    const duration = this.performanceElement.duration;
-    if (!Number.isFinite(duration) || duration <= 0) return;
 
     const clampedTime = clampPerformanceTime(timeSec);
     this.hoverSegmentStartSec = clampedTime;
@@ -655,6 +822,7 @@ export class SculptureAudio {
     this.hoverQuadY = 0;
     this.performanceSpatialX = 0;
     this.performanceSpatialY = 0;
+    this.spatialDriftPhase = 0;
 
     if (this.context && this.contrabassLoopGain) {
       this.contrabassLoopGain.gain.setTargetAtTime(0.0001, this.context.currentTime, 0.14);
@@ -694,8 +862,13 @@ export class SculptureAudio {
       this.hoverPitchMidi = target.midi;
 
       if (this.performanceLoaded && this.performanceElement) {
-        const duration = this.performanceElement.duration;
-        this.sustainHoverAtTime(duration * midiToPerformancePosition(target.midi), x, y, intensity, switching);
+        this.sustainHoverAtTime(
+          performancePositionToTimeSec(midiToPerformancePosition(target.midi)),
+          x,
+          y,
+          intensity,
+          switching
+        );
         return;
       }
 
@@ -718,9 +891,8 @@ export class SculptureAudio {
     this.hoverTechniqueMarkerIndex = target.markerIndex;
 
     if (this.performanceLoaded && this.performanceElement) {
-      const duration = this.performanceElement.duration;
       this.sustainHoverAtTime(
-        duration * techniqueToPerformancePosition(target.technique, target.markerIndex),
+        performancePositionToTimeSec(techniqueToPerformancePosition(target.technique, target.markerIndex)),
         x,
         y,
         intensity,
@@ -742,15 +914,12 @@ export class SculptureAudio {
   ): void {
     if (!this.performanceLoaded || !this.context || !this.performanceElement || !this.performanceGain) return;
 
-    const duration = this.performanceElement.duration;
-    if (!Number.isFinite(duration) || duration <= 0) return;
-
     this.performanceElement.currentTime = clampPerformanceTime(timeSec);
     this.performanceTargetTime = this.performanceElement.currentTime;
     this.performanceElement.playbackRate = 1;
 
     const now = this.context.currentTime;
-    const peak = 0.38 + intensity * 0.68;
+    const peak = 0.52 + intensity * 0.78;
     this.updatePerformanceQuadPosition(pointerX, pointerY, now);
     this.performanceGain.gain.cancelScheduledValues(now);
     this.performanceGain.gain.setValueAtTime(0.0001, now);
@@ -764,7 +933,7 @@ export class SculptureAudio {
     }
 
     if (burst) {
-      this.performanceGain.gain.setTargetAtTime(0.3 + intensity * 0.38, now + 0.45, 0.2);
+      this.performanceGain.gain.setTargetAtTime(0.38 + intensity * 0.44, now + 0.45, 0.2);
     }
 
     void this.performanceElement.play().catch(() => undefined);
@@ -773,11 +942,8 @@ export class SculptureAudio {
   private seekPerformanceToMidi(midi: number, intensity: number, pointerX?: number, pointerY?: number): void {
     if (!this.performanceLoaded || !this.context || !this.performanceElement || !this.performanceGain) return;
 
-    const duration = this.performanceElement.duration;
-    if (!Number.isFinite(duration) || duration <= 0) return;
-
     this.seekPerformanceToTime(
-      clampPerformanceTime(duration * midiToPerformancePosition(midi)),
+      performancePositionToTimeSec(midiToPerformancePosition(midi)),
       intensity,
       true,
       pointerX,
@@ -794,11 +960,8 @@ export class SculptureAudio {
   ): void {
     if (!this.performanceLoaded || !this.context || !this.performanceElement || !this.performanceGain) return;
 
-    const duration = this.performanceElement.duration;
-    if (!Number.isFinite(duration) || duration <= 0) return;
-
     this.seekPerformanceToTime(
-      clampPerformanceTime(duration * techniqueToPerformancePosition(technique, markerIndex)),
+      performancePositionToTimeSec(techniqueToPerformancePosition(technique, markerIndex)),
       intensity,
       true,
       pointerX,

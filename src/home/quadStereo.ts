@@ -22,9 +22,9 @@ export const spreadQuadPoint = (x: number, y: number, spread = 1.55): QuadPoint 
   y: clamp(y * spread, -1, 1),
 });
 
-export const quadWeightsFromPoint = (x: number, y: number): QuadWeights => {
-  const xN = clamp(sharpenAxis(x), -1, 1);
-  const yN = clamp(sharpenAxis(y), -1, 1);
+export const quadWeightsFromPoint = (x: number, y: number, sharpenPower = 0.55): QuadWeights => {
+  const xN = clamp(sharpenAxis(x, sharpenPower), -1, 1);
+  const yN = clamp(sharpenAxis(y, sharpenPower), -1, 1);
   const front = (1 - yN) * 0.5;
   const rear = (1 + yN) * 0.5;
   const left = (1 - xN) * 0.5;
@@ -58,6 +58,7 @@ export interface QuadStereoOptions {
   rearMix?: number;
   frontBoost?: number;
   rearCutoffHz?: number;
+  sharpenPower?: number;
 }
 
 export class QuadStereoRouter {
@@ -77,6 +78,8 @@ export class QuadStereoRouter {
 
   private readonly rearMix: number;
 
+  private readonly sharpenPower: number;
+
   constructor(context: AudioContext, destination: AudioNode, options: QuadStereoOptions = {}) {
     const {
       rlDelaySec = 0.018,
@@ -84,11 +87,13 @@ export class QuadStereoRouter {
       rearMix = 0.68,
       frontBoost = 1.06,
       rearCutoffHz = 1900,
+      sharpenPower = 0.55,
     } = options;
 
     this.context = context;
     this.frontBoost = frontBoost;
     this.rearMix = rearMix;
+    this.sharpenPower = sharpenPower;
     this.input = context.createGain();
 
     this.flGain = context.createGain();
@@ -136,15 +141,15 @@ export class QuadStereoRouter {
     this.setPosition(0, 0);
   }
 
-  setPosition(x: number, y: number, time?: number, spread = 1.55): void {
+  setPosition(x: number, y: number, time?: number, spread = 1.55, sharpenPower = this.sharpenPower): void {
     const point = spreadQuadPoint(x, y, spread);
-    const weights = normalizeQuadWeights(quadWeightsFromPoint(point.x, point.y));
+    const weights = normalizeQuadWeights(quadWeightsFromPoint(point.x, point.y, sharpenPower));
     const t = time ?? this.context.currentTime;
 
-    this.flGain.gain.setTargetAtTime(weights.fl * this.frontBoost, t, 0.035);
-    this.frGain.gain.setTargetAtTime(weights.fr * this.frontBoost, t, 0.035);
-    this.rlGain.gain.setTargetAtTime(weights.rl * this.rearMix, t, 0.035);
-    this.rrGain.gain.setTargetAtTime(weights.rr * this.rearMix, t, 0.035);
+    this.flGain.gain.setTargetAtTime(weights.fl * this.frontBoost, t, 0.028);
+    this.frGain.gain.setTargetAtTime(weights.fr * this.frontBoost, t, 0.028);
+    this.rlGain.gain.setTargetAtTime(weights.rl * this.rearMix, t, 0.028);
+    this.rrGain.gain.setTargetAtTime(weights.rr * this.rearMix, t, 0.028);
   }
 }
 

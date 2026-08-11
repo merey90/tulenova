@@ -30,6 +30,9 @@ import img29 from './assets/photo 29.jpg';
 import img30 from './assets/photo 30.jpg';
 import img31 from './assets/photo 31.jpg';
 import img32 from './assets/photo 32.jpg';
+import img33 from './assets/photo 33.png';
+import img34 from './assets/photo 34.png';
+import img35 from './assets/photo 35.png';
 
 const photosByNumber = [
   img1,
@@ -64,10 +67,14 @@ const photosByNumber = [
   img30,
   img31,
   img32,
+  img33,
+  img34,
+  img35,
 ];
 
 export const photoDisplayOrder = [
-  3, 4, 5, 9, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 1, 2, 6, 7, 8, 10, 11, 12, 13, 14,
+  33, 34, 35, 3, 4, 5, 9, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 1, 2, 6, 7, 8, 10, 11,
+  12, 13, 14,
 ];
 
 export const homeSlideshowStartPhoto = 4;

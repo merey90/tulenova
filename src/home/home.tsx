@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InstagramIcon from '@material-ui/icons/Instagram';
@@ -15,10 +15,10 @@ import { useHomeBackground } from './useHomeBackground';
 import './home.scss';
 
 const installation = {
-  tag: 'Sound installation',
-  title: 'Golden Ratio Progression',
-  meta: 'Interactive audio · quad stereo · live bass flute performance',
-  text: 'An immersive quad stereo sound field drawn from a live bass flute recording. Move through the constellation to explore pitches, resonance, and spatial motion across four channels.',
+  tag: 'Audiovisual installation',
+  title: 'Aijaryq /TURAN(DOT)/',
+  meta: '2025 · Personal artistic research project',
+  text: 'Aijaryk Turan(dot) is an audiovisual installation rooted in personal artistic research. Through sound, image, and spatial composition, the work explores memory, identity, and the transformation of cultural narratives from an intimate, contemporary perspective.',
 };
 
 const feedSections = [
@@ -79,12 +79,22 @@ const feedSections = [
 export const Home: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [volume, setVolume] = useState(INSTALLATION_DEFAULT_VOLUME);
+  const startAudioRef = useRef<(() => Promise<void>) | null>(null);
   const { photoIndex, showIntro, showDescription } = useHomeBackground();
+  const showSoundOn = !showIntro || showDescription;
+
+  const handleAudioReady = useCallback((startAudio: () => Promise<void>) => {
+    startAudioRef.current = startAudio;
+  }, []);
+
+  const handleSoundOn = () => {
+    void startAudioRef.current?.();
+  };
 
   return (
     <div className="home-container">
       <HomeBackground photoIndex={photoIndex} />
-      <SculptureInstallation volume={volume} />
+      <SculptureInstallation volume={volume} onAudioReady={handleAudioReady} />
 
       <header className="home-topbar">
         <button
@@ -152,6 +162,20 @@ export const Home: React.FC = () => {
       </div>
 
       <section className={`home-hero${showIntro ? ' home-hero--intro' : ''}`} aria-label="Sound installation hero">
+        <button
+          type="button"
+          className={`home-sound-cta${showSoundOn ? ' home-sound-cta--visible' : ''}`}
+          onClick={handleSoundOn}
+          aria-label="Turn sound on"
+          aria-hidden={!showSoundOn}
+          tabIndex={showSoundOn ? 0 : -1}
+        >
+          <span className="home-sound-cta-ring">
+            <span className="home-sound-cta-pulse" />
+          </span>
+          <span className="home-sound-cta-label">Sound on</span>
+        </button>
+
         {showIntro ? (
           <article
             className={`home-installation-intro${showDescription ? ' home-installation-intro--visible' : ''}`}
@@ -166,17 +190,9 @@ export const Home: React.FC = () => {
             <p className="home-installation-text">{installation.text}</p>
           </article>
         ) : (
-          <>
-            <div className="home-sound-cta" aria-hidden="true">
-              <span className="home-sound-cta-ring">
-                <span className="home-sound-cta-pulse" />
-              </span>
-              <span className="home-sound-cta-label">Sound on</span>
-            </div>
-            <a href="#home-feed" className="home-scroll-cue">
-              Scroll down
-            </a>
-          </>
+          <a href="#home-feed" className="home-scroll-cue">
+            Scroll down
+          </a>
         )}
       </section>
 
