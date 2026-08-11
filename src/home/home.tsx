@@ -5,17 +5,20 @@ import InstagramIcon from '@material-ui/icons/Instagram';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
+import VolumeOffIcon from '@material-ui/icons/VolumeOff';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import { InstallationNav } from './installationNav';
 import { HomeBackground } from './homeBackground';
 import { SculptureInstallation } from './sculptureInstallation';
+import { INSTALLATION_DEFAULT_VOLUME } from './sculptureAudio';
 import { useHomeBackground } from './useHomeBackground';
 import './home.scss';
 
 const installation = {
   tag: 'Sound installation',
   title: 'Golden Ratio Progression',
-  meta: 'Interactive audio · live bass flute performance',
-  text: 'An immersive sound field drawn from a live bass flute recording. Move through the constellation to explore pitches, resonance, and spatial motion.',
+  meta: 'Interactive audio · quad stereo · live bass flute performance',
+  text: 'An immersive quad stereo sound field drawn from a live bass flute recording. Move through the constellation to explore pitches, resonance, and spatial motion across four channels.',
 };
 
 const feedSections = [
@@ -75,12 +78,13 @@ const feedSections = [
 
 export const Home: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [volume, setVolume] = useState(INSTALLATION_DEFAULT_VOLUME);
   const { photoIndex, showIntro, showDescription } = useHomeBackground();
 
   return (
     <div className="home-container">
       <HomeBackground photoIndex={photoIndex} />
-      <SculptureInstallation />
+      <SculptureInstallation volume={volume} />
 
       <header className="home-topbar">
         <button
@@ -105,6 +109,27 @@ export const Home: React.FC = () => {
           <span className="home-mark-text">Mira Tulenova</span>
         </Link>
       </header>
+
+      <label className="home-volume-control" htmlFor="installation-volume">
+        <span className="home-volume-icon" aria-hidden="true">
+          {volume <= 0.001 ? <VolumeOffIcon fontSize="small" /> : <VolumeUpIcon fontSize="small" />}
+        </span>
+        <span className="home-volume-label">Volume</span>
+        <input
+          id="installation-volume"
+          className="home-volume-slider"
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={Math.round(volume * 100)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(volume * 100)}
+          aria-label="Installation volume"
+          onChange={(event) => setVolume(Number(event.target.value) / 100)}
+        />
+      </label>
 
       <div className={`home-menu${menuOpen ? ' home-menu--open' : ''}`} aria-hidden={!menuOpen}>
         <nav className="home-menu-nav" aria-label="Site menu">

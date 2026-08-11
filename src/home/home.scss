@@ -107,6 +107,72 @@
   }
 }
 
+.home-volume-control {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba($home-text, 0.28);
+  background: rgba($photo-espresso, 0.72);
+  backdrop-filter: blur(10px);
+  color: $home-text;
+  pointer-events: auto;
+}
+
+.home-volume-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $home-accent-bright;
+}
+
+.home-volume-label {
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba($home-text, 0.88);
+}
+
+.home-volume-slider {
+  width: clamp(5.5rem, 16vw, 7.5rem);
+  height: 0.18rem;
+  margin: 0;
+  appearance: none;
+  background: rgba($home-text, 0.22);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1px solid rgba($home-text, 0.65);
+    border-radius: 50%;
+    background: $home-accent-bright;
+    box-shadow: 0 0 0.45rem rgba($home-accent, 0.35);
+  }
+
+  &::-moz-range-thumb {
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1px solid rgba($home-text, 0.65);
+    border-radius: 50%;
+    background: $home-accent-bright;
+    box-shadow: 0 0 0.45rem rgba($home-accent, 0.35);
+  }
+
+  &::-moz-range-track {
+    height: 0.18rem;
+    background: rgba($home-text, 0.22);
+    border-radius: 999px;
+  }
+}
+
 .home-mark {
   display: inline-flex;
   align-items: center;

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { ringNodeTechnique, ringNodeTechniqueMarkerIndex, ExtendedTechnique } from './bassFlutePerformance';
 import { CONTRABASS_MAX_MIDI, CONTRABASS_MIN_MIDI } from './contrabassFluteSamples';
 import { pearlRgba } from './installationColors';
-import { CenterApproachSide, SculptureAudio } from './sculptureAudio';
+import { CenterApproachSide, INSTALLATION_DEFAULT_VOLUME, SculptureAudio } from './sculptureAudio';
 import './sculptureInstallation.scss';
 
 interface Point3D {
@@ -37,12 +37,30 @@ interface CenterImpact {
 const NODE_COUNT = 128;
 const RING_COUNT = 4;
 const RING_NODES = 32;
-const RING_RADIUS_BASE = 150;
-const RING_RADIUS_STEP = 34;
-const SCULPTURE_SCALE = 1.65;
-const SCULPTURE_EXTENT_X = 280;
-const SCULPTURE_EXTENT_Y = 185;
-const POINTER_REACH = 0.62;
+const RING_RADIUS_BASE = 182;
+const RING_RADIUS_STEP = 42;
+const SCULPTURE_SCALE = 2.05;
+const SCULPTURE_EXTENT_X = 360;
+const SCULPTURE_EXTENT_Y = 210;
+const HORIZONTAL_STRETCH = 1.2;
+const POINTER_REACH = 0.78;
+const NODE_HOVER_RADIUS = 52;
+const EDGE_ZONE = 0.66;
+
+const resolveEdgeHover = (x: number, y: number): { intensity: number; midi: number } | null => {
+  const absX = Math.abs(x);
+  const absY = Math.abs(y);
+  const edgeStrength = Math.max(absX, absY);
+
+  if (edgeStrength < EDGE_ZONE) return null;
+
+  const intensity = clamp((edgeStrength - EDGE_ZONE) / (1.02 - EDGE_ZONE), 0.48, 1);
+  const alongEdge = absX >= absY ? y : x;
+  const normalized = clamp((alongEdge + 1) / 2, 0, 1);
+  const midi = Math.round(CONTRABASS_MIN_MIDI + normalized * (CONTRABASS_MAX_MIDI - CONTRABASS_MIN_MIDI));
+
+  return { intensity, midi };
+};
 
 const createSculpture = (): Point3D[] => {
   const points: Point3D[] = [];
@@ -56,7 +74,7 @@ const createSculpture = (): Point3D[] => {
 
     points.push({
       bx: radius * Math.sin(inclination) * Math.cos(azimuth),
-      by: radius * Math.sin(inclination) * Math.sin(azimuth) * 0.72,
+      by: radius * Math.sin(inclination) * Math.sin(azimuth) * 0.58,
       bz: radius * Math.cos(inclination),
       x: 0,
       y: 0,
@@ -136,7 +154,7 @@ const directionFromSide = (side: CenterApproachSide): { dirX: number; dirY: numb
   }
 };
 
-export const SculptureInstallation: React.FC = () => {
+export const SculptureInstallation: React.FC<{ volume?: number }> = ({ volume = INSTALLATION_DEFAULT_VOLUME }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef<number>();
   const pointsRef = useRef<Point3D[]>(createSculpture());
@@ -149,6 +167,10 @@ export const SculptureInstallation: React.FC = () => {
   const projectedScreenRef = useRef<Array<{ px: number; py: number; midi: number }>>([]);
 
   useEffect(() => {
+    audioRef.current?.setMasterVolume(volume);
+  }, [volume]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
@@ -157,6 +179,7 @@ export const SculptureInstallation: React.FC = () => {
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const audio = new SculptureAudio();
+    audio.setMasterVolume(volume);
     audioRef.current = audio;
     const points = pointsRef.current;
     const pointer = pointerRef.current;
@@ -190,24 +213,6 @@ export const SculptureInstallation: React.FC = () => {
     const handlePointerDown = (event: PointerEvent) => {
       updatePointer(event.clientX, event.clientY, 1.6);
       void audio.ensureStarted().then(() => {
-        const rect = canvas.getBoundingClientRect();
-        const pointerPx = rect.width * 0.5 + pointer.x * rect.width * POINTER_REACH;
-        const pointerPy = rect.height * 0.5 + pointer.y * rect.height * POINTER_REACH;
-        let closestMidi: number | null = null;
-        let closestDistance = Infinity;
-
-        for (const node of projectedScreenRef.current) {
-          const distance = Math.hypot(node.px - pointerPx, node.py - pointerPy);
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestMidi = node.midi;
-          }
-        }
-
-        if (closestMidi !== null) {
-          audio.triggerNodePitch(closestMidi, 0.95, pointer.x);
-        }
-
         if (event.pointerType === 'mouse') {
           audio.triggerMouseClickSounds(0.92, pointer.x, pointer.y);
         } else {
@@ -259,10 +264,16 @@ export const SculptureInstallation: React.FC = () => {
 
     const handlePointerLeave = () => {
       pointer.active *= 0.92;
+      audio.updateNodeHover(null, 0, 0, 0);
+    };
+
+    const handlePointerEnter = () => {
+      void audio.ensureStarted();
     };
 
     setCanvasSize();
     window.addEventListener('resize', setCanvasSize);
+    canvas.addEventListener('pointerenter', handlePointerEnter);
     canvas.addEventListener('pointermove', handlePointerMove);
     canvas.addEventListener('pointerdown', handlePointerDown);
     canvas.addEventListener('pointerup', handlePointerLeave);
@@ -274,7 +285,7 @@ export const SculptureInstallation: React.FC = () => {
       const height = rect.height;
       const centerX = width * 0.5;
       const centerY = height * 0.5;
-      const perspective = Math.min(width, height) * 0.88;
+      const perspective = Math.max(width * 0.72, height * 0.82);
 
       timeRef.current += reducedMotion ? 0.004 : 0.012;
       const time = timeRef.current;
@@ -348,7 +359,7 @@ export const SculptureInstallation: React.FC = () => {
         const scale = perspective / (perspective + z2);
         projected.push({
           ...point,
-          px: centerX + x3 * scale,
+          px: centerX + x3 * scale * HORIZONTAL_STRETCH,
           py: centerY + y3 * scale,
           depth: z2,
           size: (point.ring >= 0 ? 2.4 : 3.1) * scale + pointer.active * 0.9 + sectorExpand * 4.8,
@@ -375,19 +386,40 @@ export const SculptureInstallation: React.FC = () => {
         }
       }
 
-      const nodeHitRadius = 44 + pointer.active * 28;
+      const nodeHitRadius = NODE_HOVER_RADIUS + pointer.active * 16;
 
-      if (closestNode && closestDistance < nodeHitRadius && pointer.active > 0.06 && !reducedMotion) {
-        const pitchIntensity = clamp(1 - closestDistance / nodeHitRadius, 0.4, 1);
-        if (closestNode.ring >= 0 && closestNode.technique) {
-          audio.triggerNodeTechnique(
-            closestNode.technique,
-            closestNode.techniqueMarkerIndex,
-            pitchIntensity,
-            pointer.x
-          );
+      if (!reducedMotion) {
+        if (closestNode && closestDistance < nodeHitRadius) {
+          const nodeX = clamp((closestNode.px / width) * 2 - 1, -1, 1);
+          const nodeY = clamp((closestNode.py / height) * 2 - 1, -1, 1);
+          const pitchIntensity = clamp(1 - closestDistance / nodeHitRadius, 0.55, 1);
+
+          if (closestNode.ring >= 0 && closestNode.technique) {
+            audio.updateNodeHover(
+              {
+                kind: 'technique',
+                technique: closestNode.technique,
+                markerIndex: closestNode.techniqueMarkerIndex,
+              },
+              nodeX,
+              nodeY,
+              pitchIntensity
+            );
+          } else {
+            audio.updateNodeHover({ kind: 'pitch', midi: closestNode.midi }, nodeX, nodeY, pitchIntensity);
+          }
         } else {
-          audio.triggerNodePitch(closestNode.midi, pitchIntensity, pointer.x);
+          const edgeHover = resolveEdgeHover(pointer.x, pointer.y);
+          if (edgeHover && pointer.active > 0.04) {
+            audio.updateNodeHover(
+              { kind: 'pitch', midi: edgeHover.midi },
+              pointer.x,
+              pointer.y,
+              edgeHover.intensity
+            );
+          } else {
+            audio.updateNodeHover(null, 0, 0, 0);
+          }
         }
       }
 
@@ -406,7 +438,7 @@ export const SculptureInstallation: React.FC = () => {
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
-      const linkDistance = 118 + centerImpact.strength * 92;
+      const linkDistance = 148 + centerImpact.strength * 92;
 
       for (let i = 0; i < projected.length; i += 1) {
         for (let j = i + 1; j < projected.length; j += 1) {
@@ -511,6 +543,7 @@ export const SculptureInstallation: React.FC = () => {
 
     return () => {
       window.removeEventListener('resize', setCanvasSize);
+      canvas.removeEventListener('pointerenter', handlePointerEnter);
       canvas.removeEventListener('pointermove', handlePointerMove);
       canvas.removeEventListener('pointerdown', handlePointerDown);
       canvas.removeEventListener('pointerup', handlePointerLeave);
