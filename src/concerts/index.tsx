@@ -86,7 +86,7 @@ export const Concerts: React.FC = () => {
         </Hidden>
         <Box mt={2} />
         <Typography variant="h3" gutterBottom align="left" color="secondary">
-          Concerts
+          Performances
         </Typography>
         <Box className="concerts-backdrop">
           {cons.map((concert) => (

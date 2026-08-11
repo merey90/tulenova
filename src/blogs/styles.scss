@@ -1,3 +1,5 @@
+@import '../assets/styles/variables';
+
 .projects-wrapper {
   background-image: url('./background.jpg');
   min-height: 100vh;
@@ -5,9 +7,9 @@
 }
 
 .projects-backdrop {
-  background: rgba($color: #000000, $alpha: 0.8);
+  background: $at-panel;
   padding: 20px;
-  color: white;
+  color: $at-lime;
 }
 
 .project-item {
@@ -20,7 +22,7 @@
 }
 
 .project-item-div {
-  border: 1px solid #a3956d;
+  border: 1px solid $secondary-color;
   width: 30px;
   margin-bottom: 10px;
 }

@@ -46,7 +46,7 @@ export const Contact: IRoute = {
 };
 
 export const Concerts: IRoute = {
-  title: 'Concerts',
+  title: 'Performances',
   path: '/concerts',
   component: ConcertsComponent,
 };

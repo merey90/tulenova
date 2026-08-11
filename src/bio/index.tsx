@@ -16,59 +16,61 @@ export const Bio: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Box className="bio-backdrop">
             <p>
-              Mira Tulenova is a Kazakh-German flutist who is deeply passionate about contemporary music. As a member of
-              the new generation of international musicians dedicated to pushing the boundaries of their art, she
-              constantly explores new ways to experiment with sound and technical possibilities. Mira is known for her
-              innovative and daring approach to music, and she has quickly gained recognition in the world of
-              contemporary music.
+              Mira Tulenova is a Kazakh-German musician, interdisciplinary artist, curator, and cultural researcher
+              based in Berlin. Her practice moves between contemporary and experimental music, performance, artistic
+              research, curatorial work, and cultural heritage, with a particular interest in Central Asia,
+              transnational identities, sound, memory, and the ways cultural narratives are produced and transmitted.
             </p>
             <p>
-              Mira was born into a family of musicians and artists in Almaty. She began her professional musical studies
-              at a young age at the Republican Music School for Talented Children, selecting the flute as her main
-              instrument with a recommendation from Helga Kuster and the American National Flute Association. Mira won
-              her first prize at the age of ten in an international music festival "The Voice of Asia." In the same
+              Trained as a classical flutist and composer, Tulenova developed an early interest in contemporary music
+              and experimental approaches to sound. Born into a family of musicians and artists in Almaty, Kazakhstan,
+              she began her professional musical education at the Republican Music School for Talented Children. At the
+              age of ten, she won her first prize at the international music festival The Voice of Asia. In the same
               year, she won the Soros Foundation scholarship for the Central Music School of Moscow State Tchaikovsky
-              Conservatory. During her studies, she was awarded numerous prizes at important competitions and festivals
-              in Kazakhstan, Russia, Hungary, Latvia, and Romania, and quickly established herself as a sought-after
-              performer, playing with orchestras and ensembles such as the Moscow Philharmonic Orchestra and Camerata
-              Kazakhstan. After school, she was invited to work permanently with the State Academic Symphony Orchestra
-              of the Republic of Kazakhstan and won a presidential scholarship to study at the National Conservatory, as
-              well as a DAAD prize to study at the Hochschule für Künste Bremen and the Hochschule für Musik Karlsruhe,
-              receiving a master's degree in music and art. During her career, she trained with flutists such as
+              Conservatory. She continued her education in Kazakhstan and Germany, including studies at the Hochschule
+              für Künste Bremen and the Hochschule für Musik Karlsruhe, where she received a master&apos;s degree in
+              music and art.
+            </p>
+            <p>
+              Her musical practice has been shaped through encounters with leading performers and pedagogues including
               Pierre-Yves Artaud, Aurèle Nicolet, Sophie Cherrier, Andrea Lieberknecht, Yuri Dolzhikov, James Galway,
-              Renate Greiss-Armin, Emmanuel Pahud, Bettina Wilde, Yerkhat Nurgaliyev, Balzhan Orazbayeva, Mario Caroli,
-              Benoit Fromanger, Christoph Huntgeburth, and Dietmar Wiesner. She has collaborated with renowned
-              conductors, including Valery Gergiev, Fedor Lednev, Renat Salavatov, Teodor Currentzis, Alan Buribaev,
-              Jan-Moritz Onken, Arnaud Arbet and many other musicians.
+              Emmanuel Pahud, Mario Caroli, Benoît Fromanger, Christoph Huntgeburth, and Dietmar Wiesner. She has
+              collaborated with conductors and musicians including Valery Gergiev, Fedor Lednev, Renat Salavatov, Teodor
+              Currentzis, Alan Buribayev, Jan-Moritz Onken, and Arnaud Arbet.
             </p>
             <p>
-              Her passion for contemporary music led her to become a founding member of the ensemble of contemporary and
-              experimental music EEGERU. She has worked with the Meyerhold Center for Performing Arts, the ORTA Center,
-              and many other collectives and musicians.
+              Tulenova is a founding member of EEGERU, an ensemble dedicated to contemporary and experimental music. Her
+              artistic collaborations have extended beyond conventional concert formats to interdisciplinary contexts,
+              including projects with the Meyerhold Center for Performing Arts, the ORTA Center, independent artists,
+              composers, and experimental collectives.
             </p>
             <p>
-              She has premiered works by Tristan Murail, Klaus Lang, Aigerim Seilova, Hans Zender, Anton Safronov,
-              Dmitri Kourliandski, Sanzhar Baiterekov, Tokzhan Karatai, Oleg Paiberdin, David Lang, and Rakhat-Bi
-              Abdyssagin.
+              As a performer, she has premiered and interpreted works by composers including Tristan Murail, Klaus Lang,
+              Aigerim Seilova, Hans Zender, Anton Safronov, Dmitri Kourliandski, Sanzhar Baiterekov, Tokzhan Karatai,
+              Oleg Paiberdin, David Lang, and Rakhat-Bi Abdyssagin. Her projects have been presented at festivals
+              including Musikfest Berlin, Zermatt Festival, Festival d&apos;Aix-en-Provence, Nauryz XXI, Kasachische
+              Perlen, Otkrovenie, and Young Euro Classic, as well as at venues including the Berlin Philharmonie,
+              Carnegie Hall, the Kennedy Center, Elbphilharmonie, Beethovenhalle, Wiener Konzerthaus, and Musikverein.
             </p>
             <p>
-              She has taken part in festivals such as Musikfest Berlin, Zermatt, Aix-en-Provence, Nauryz XXI
-              contemporary music festival, Kasachische Perlen, Откровение, Young Euro Classic, and others.
+              Alongside her artistic practice, Tulenova has worked extensively in cultural research, curating, cultural
+              policy, and heritage preservation, with a particular focus on Kazakhstan and Central Asia. Since 2012, she
+              has contributed as a researcher, cultural expert, curator, and project manager to projects connected with
+              the Research Institute of Culture, UNESCO initiatives in Central Asia, the Association of Museums, and the
+              Ministry of Culture of Kazakhstan. She is a curator of the Central Asian programme of VOICES Festival
+              Berlin and Month of Contemporary Music Berlin, and has also collaborated with Berliner Festspiele on
+              curatorial and interdisciplinary cultural projects.
             </p>
             <p>
-              Mira's performances have taken her to many prestigious concert halls, including the Berlin Philharmonie,
-              Carnegie Hall, Kennedy Center, Elbphilharmonie, Beethovenhalle, Wiener Konzerthaus, Musikverein, and many
-              other stages in France, Russia, Hungary, Holland, Slovenia, and other countries.
+              Her interdisciplinary work considers music not only as a performance practice but also as a form of
+              cultural knowledge and a space for critical inquiry. Through artistic, research-based, and curatorial
+              projects, she explores relationships between sound and place, archives and living memory, cultural
+              inheritance and contemporary artistic production, as well as the complex histories and identities
+              connecting Central Asia and Europe.
             </p>
             <p>
-              Mira speaks English, German, Russian, Kazakh, French, and Turkish, and resides in Berlin, Germany, where
-              she works and studies between concerts. She is a member of the Initiative Neue Musik Berlin.
-            </p>
-            <p>
-              Parallel to her musical career, Mira has contributed to the cultural policy of Kazakhstan and the
-              preservation of the cultural heritage of Central Asia. Since 2012, she has worked as a researcher, culture
-              expert, and project manager for the Research Institute of Culture, UNESCO Central Asia, Association of
-              Museums, and the Ministry of Culture of Kazakhstan.
+              Tulenova is a member of Initiative Neue Musik Berlin. She speaks Kazakh, Russian, German, English, French,
+              and Turkish and lives and works in Berlin.
             </p>
           </Box>
         </Grid>

@@ -1,11 +1,58 @@
 $assets-path: 'https://s3.eu-central-1.amazonaws.com/tulenova.com';
 
-$primary-color: #000; //424242
-$primary-color-dark: #1b1b1b;
-$primary-color-light: #6d6d6d;
-$secondary-color: #a3956d;
-$secondary-color-dark: #c97b63;
-$secondary-color-light: #ffddc1;
-$font-color: #fff;
-$font-color-faded: #6d6d6d;
-$font-on-secondary: #000;
+@import 'museum-type';
+
+$at-bg-0: #26292b;
+$at-bg-1: #35383b;
+$at-bg-2: #272930;
+$at-lime: #b0fc59;
+$at-lime-bright: #c9ff82;
+$at-lime-soft: rgba(176, 252, 89, 0.72);
+$at-lime-faint: rgba(176, 252, 89, 0.45);
+$at-panel: rgba(0, 0, 0, 0.5);
+
+$photo-tan: #c89878;
+$photo-tan-light: #d8b898;
+$photo-tan-deep: #8f745d;
+$photo-tan-soft: #c8a888;
+$photo-espresso: #2a2420;
+
+$pearl-white: $at-bg-1;
+$pearl-shell: $at-bg-0;
+$pearl-cream: $at-bg-2;
+$pearl-champagne: $at-lime-soft;
+$pearl-taupe: $at-lime-faint;
+$pearl-mink: rgba(176, 252, 89, 0.55);
+$pearl-ink: $at-lime;
+$pearl-deep: $at-lime-bright;
+
+$primary-color: $at-bg-0;
+$primary-color-dark: $at-lime;
+$primary-color-light: $at-lime-soft;
+$secondary-color: $at-lime;
+$secondary-color-dark: #8fd945;
+$secondary-color-light: $at-lime-bright;
+$font-color: $at-lime;
+$font-color-faded: $at-lime-soft;
+$font-on-secondary: $at-bg-0;
+
+$home-bg: $photo-espresso;
+$home-bg-1: $photo-tan;
+$home-bg-2: $photo-tan-deep;
+$home-bg-soft: rgba($photo-espresso, 0.82);
+$home-text: $at-lime;
+$home-text-muted: $at-lime-soft;
+$home-accent: $at-lime;
+$home-accent-bright: $at-lime-bright;
+$home-accent-soft: rgba(176, 252, 89, 0.18);
+$home-panel: rgba(42, 36, 32, 0.78);
+
+$home-photo-overlay: linear-gradient(
+  180deg,
+  rgba($photo-espresso, 0.58) 0%,
+  rgba($photo-tan-deep, 0.38) 42%,
+  rgba($photo-tan, 0.22) 100%
+);
+
+$site-bg-gradient: radial-gradient(50% 50% at 50% 50%, rgba(26, 25, 25, 0.75), transparent),
+  linear-gradient(180deg, $at-bg-0 0%, $at-bg-1 15%, $at-bg-2 50%);
