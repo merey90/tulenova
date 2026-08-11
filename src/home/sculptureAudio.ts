@@ -1,10 +1,19 @@
 import {
   ContrabassFluteNote,
+  CONTRABASS_MAX_MIDI,
+  CONTRABASS_MIN_MIDI,
   findNearestContrabassNote,
   frequencyToMidi,
   loadContrabassFluteSamples,
   playbackRateForMidi,
 } from './contrabassFluteSamples';
+import {
+  BASS_FLUTE_PERFORMANCE_URL,
+  CENTER_TECHNIQUE_MAP,
+  ExtendedTechnique,
+  midiToPerformancePosition,
+  techniqueToPerformancePosition,
+} from './bassFlutePerformance';
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -49,6 +58,20 @@ export class SculptureAudio {
 
   private activeContrabassMidi: number | null = null;
 
+  private performanceElement: HTMLAudioElement | null = null;
+
+  private performanceSource: MediaElementAudioSourceNode | null = null;
+
+  private performanceGain: GainNode | null = null;
+
+  private performanceFilter: BiquadFilterNode | null = null;
+
+  private performancePanner: StereoPannerNode | null = null;
+
+  private performanceLoaded = false;
+
+  private performanceTargetTime = 0;
+
   private fluteToneTarget = 73.42;
 
   private lastMetallic = 0;
@@ -64,6 +87,16 @@ export class SculptureAudio {
   private lastNodePitchMidi: number | null = null;
 
   private lastNodePitchTime = 0;
+
+  private lastNodeTechnique: ExtendedTechnique | null = null;
+
+  private lastNodeTechniqueTime = 0;
+
+  private centerTechniqueIndex = 0;
+
+  private clickTechniqueIndex = 0;
+
+  private performancePauseTimer: number | null = null;
 
   private enabled = false;
 
@@ -85,7 +118,78 @@ export class SculptureAudio {
     this.startCrackleBed();
     this.startFluteBreathBed();
     this.startFluteTone();
+    this.setupPerformanceLayer();
+    void this.loadPerformanceRecording();
     void this.loadContrabassSamples();
+  }
+
+  private setupPerformanceLayer(): void {
+    if (!this.context || !this.masterGain || this.performanceElement) return;
+
+    const element = new Audio(BASS_FLUTE_PERFORMANCE_URL);
+    element.preload = 'auto';
+    element.crossOrigin = 'anonymous';
+    element.loop = false;
+
+    this.performanceElement = element;
+    this.performanceSource = this.context.createMediaElementSource(element);
+
+    this.performanceGain = this.context.createGain();
+    this.performanceGain.gain.value = 0.0001;
+
+    this.performanceFilter = this.context.createBiquadFilter();
+    this.performanceFilter.type = 'lowpass';
+    this.performanceFilter.frequency.value = 2800;
+    this.performanceFilter.Q.value = 0.45;
+
+    this.performancePanner = this.context.createStereoPanner();
+    this.performancePanner.pan.value = 0;
+
+    this.performanceSource.connect(this.performanceFilter);
+    this.performanceFilter.connect(this.performancePanner);
+    this.performancePanner.connect(this.performanceGain);
+    this.performanceGain.connect(this.masterGain);
+  }
+
+  private async loadPerformanceRecording(): Promise<void> {
+    if (!this.performanceElement || this.disposed) return;
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const element = this.performanceElement;
+        if (!element) {
+          reject(new Error('Performance element unavailable'));
+          return;
+        }
+
+        const handleReady = () => {
+          element.removeEventListener('loadedmetadata', handleReady);
+          element.removeEventListener('error', handleError);
+          resolve();
+        };
+
+        const handleError = () => {
+          element.removeEventListener('loadedmetadata', handleReady);
+          element.removeEventListener('error', handleError);
+          reject(new Error('Failed to load bass flute performance'));
+        };
+
+        if (element.readyState >= HTMLMediaElement.HAVE_METADATA) {
+          resolve();
+          return;
+        }
+
+        element.addEventListener('loadedmetadata', handleReady);
+        element.addEventListener('error', handleError);
+        element.load();
+      });
+
+      this.performanceLoaded = true;
+      this.performanceTargetTime = this.performanceElement.duration * 0.18;
+      this.performanceElement.currentTime = this.performanceTargetTime;
+    } catch {
+      this.performanceLoaded = false;
+    }
   }
 
   private async loadContrabassSamples(): Promise<void> {
@@ -255,6 +359,61 @@ export class SculptureAudio {
     this.maybeTriggerFlutter(motion, pointerX, pointerY);
   }
 
+  private schedulePerformancePause(delayMs = 1400): void {
+    if (this.performancePauseTimer !== null) {
+      window.clearTimeout(this.performancePauseTimer);
+    }
+
+    this.performancePauseTimer = window.setTimeout(() => {
+      this.performancePauseTimer = null;
+      if (!this.performanceElement || !this.performanceGain) return;
+
+      const now = this.context?.currentTime ?? 0;
+      this.performanceGain.gain.cancelScheduledValues(now);
+      this.performanceGain.gain.setTargetAtTime(0.0001, now, 0.08);
+      this.performanceElement.pause();
+    }, delayMs);
+  }
+
+  private seekPerformanceToTime(timeSec: number, intensity: number): void {
+    if (!this.performanceLoaded || !this.context || !this.performanceElement || !this.performanceGain) return;
+
+    const duration = this.performanceElement.duration;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+
+    this.performanceElement.currentTime = clamp(timeSec, 0, duration - 0.05);
+    this.performanceTargetTime = this.performanceElement.currentTime;
+    this.performanceElement.playbackRate = 1;
+
+    const now = this.context.currentTime;
+    const peak = 0.12 + intensity * 0.42;
+    this.performanceGain.gain.cancelScheduledValues(now);
+    this.performanceGain.gain.setValueAtTime(0.0001, now);
+    this.performanceGain.gain.linearRampToValueAtTime(peak, now + 0.04);
+    this.performanceGain.gain.setTargetAtTime(0.0001, now + 0.45, 0.28);
+
+    void this.performanceElement.play().catch(() => undefined);
+    this.schedulePerformancePause(1500);
+  }
+
+  private seekPerformanceToMidi(midi: number, intensity: number): void {
+    if (!this.performanceLoaded || !this.context || !this.performanceElement || !this.performanceGain) return;
+
+    const duration = this.performanceElement.duration;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+
+    this.seekPerformanceToTime(duration * midiToPerformancePosition(midi), intensity);
+  }
+
+  private seekPerformanceToTechnique(technique: ExtendedTechnique, markerIndex: number, intensity: number): void {
+    if (!this.performanceLoaded || !this.context || !this.performanceElement || !this.performanceGain) return;
+
+    const duration = this.performanceElement.duration;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+
+    this.seekPerformanceToTime(duration * techniqueToPerformancePosition(technique, markerIndex), intensity);
+  }
+
   private updateFluteLayers(motion: number, active: number, pointerX: number, pointerY: number): void {
     if (
       !this.context ||
@@ -271,12 +430,16 @@ export class SculptureAudio {
     this.fluteToneTarget += (targetFreq - this.fluteToneTarget) * 0.06;
     this.fluteToneOsc.frequency.setTargetAtTime(this.fluteToneTarget, now, 0.1);
 
-    this.fluteBreathGain.gain.setTargetAtTime(0.01 + motion * 0.075 + active * 0.038, now, 0.1);
+    this.fluteBreathGain.gain.setTargetAtTime(
+      this.performanceLoaded ? 0.004 + motion * 0.03 + active * 0.012 : 0.01 + motion * 0.075 + active * 0.038,
+      now,
+      0.1
+    );
     this.fluteBreathFilter.frequency.setTargetAtTime(120 + motion * 480 + active * 220, now, 0.14);
     this.fluteBreathFilter.Q.setTargetAtTime(0.22 + motion * 0.3, now, 0.15);
 
     this.fluteToneGain.gain.setTargetAtTime(
-      active > 0.08 ? 0.004 + active * 0.022 + motion * 0.008 : 0.0001,
+      this.performanceLoaded || active <= 0.08 ? 0.0001 : 0.004 + active * 0.022 + motion * 0.008,
       now,
       0.14
     );
@@ -285,12 +448,20 @@ export class SculptureAudio {
   }
 
   private updateContrabassSampleLayer(active: number, motion: number, pointerX: number, pointerY: number): void {
+    if (this.performanceLoaded) {
+      if (this.context && this.contrabassLoopGain) {
+        this.contrabassLoopGain.gain.setTargetAtTime(0.0001, this.context.currentTime, 0.08);
+      }
+      this.stopContrabassLoop();
+      return;
+    }
+
     if (!this.contrabassLoaded || !this.context || !this.contrabassLoopGain || !this.contrabassNotes.length) {
       return;
     }
 
     const now = this.context.currentTime;
-    const targetGain = active > 0.08 ? 0.02 + active * 0.12 + motion * 0.04 : 0.0001;
+    const targetGain = active > 0.08 ? 0.008 + active * 0.05 + motion * 0.02 : 0.0001;
 
     if (targetGain <= 0.0002) {
       this.contrabassLoopGain.gain.setTargetAtTime(0.0001, now, 0.12);
@@ -343,6 +514,12 @@ export class SculptureAudio {
   }
 
   private playContrabassStaccato(intensity: number, pointerX: number, pointerY: number): void {
+    if (this.performanceLoaded) {
+      const targetMidi = frequencyToMidi(this.pointerToFluteFrequency(pointerX, pointerY));
+      this.seekPerformanceToMidi(targetMidi, intensity);
+      return;
+    }
+
     const targetMidi = frequencyToMidi(this.pointerToFluteFrequency(pointerX, pointerY));
     this.playContrabassPitchClear(targetMidi, intensity, pointerX, 0.55);
   }
@@ -355,7 +532,62 @@ export class SculptureAudio {
 
     this.lastNodePitchMidi = midi;
     this.lastNodePitchTime = now;
+
+    if (this.performanceLoaded) {
+      this.seekPerformanceToMidi(midi, intensity);
+      this.performancePanner?.pan.setTargetAtTime(clamp(pan, -1, 1), this.context.currentTime, 0.06);
+      return;
+    }
+
     this.playContrabassPitchClear(midi, intensity, pan, 0.92);
+  }
+
+  triggerNodeTechnique(technique: ExtendedTechnique, markerIndex: number, intensity: number, pan: number): void {
+    if (!this.enabled || !this.context) return;
+
+    const now = performance.now();
+    if (technique === this.lastNodeTechnique && now - this.lastNodeTechniqueTime < 120) return;
+
+    this.lastNodeTechnique = technique;
+    this.lastNodeTechniqueTime = now;
+
+    if (this.performanceLoaded) {
+      this.seekPerformanceToTechnique(technique, markerIndex, intensity);
+      this.performancePanner?.pan.setTargetAtTime(clamp(pan, -1, 1), this.context.currentTime, 0.06);
+      return;
+    }
+
+    this.playRecordedTechniqueFallback(technique, intensity, pan);
+  }
+
+  private playRecordedTechniqueFallback(
+    technique: ExtendedTechnique,
+    intensity: number,
+    pointerX: number,
+    pointerY = 0
+  ): void {
+    switch (technique) {
+      case 'key-click':
+        this.playKeyClick(pointerX, true);
+        break;
+      case 'slap':
+        this.playSlap(intensity, pointerX, pointerY);
+        break;
+      case 'jet-whistle':
+        this.playJetWhistle(intensity, pointerX, pointerY);
+        break;
+      case 'tongue-stop':
+        this.playTongueStop(intensity);
+        break;
+      case 'multiphonic':
+        this.playMultiphonicCluster(intensity, pointerX, pointerY);
+        break;
+      case 'split-tone':
+        this.playSplitToneSqueak(intensity, pointerX, pointerY);
+        break;
+      default:
+        break;
+    }
   }
 
   playContrabassPitchClear(midi: number, intensity: number, pan: number, sustainRatio = 0.92): void {
@@ -410,6 +642,16 @@ export class SculptureAudio {
     if (!this.enabled || !this.context) return;
 
     const level = clamp(intensity, 0.5, 1);
+    const clickIndex = this.clickTechniqueIndex;
+    this.clickTechniqueIndex += 1;
+
+    if (this.performanceLoaded) {
+      this.seekPerformanceToTechnique('slap', clickIndex, level);
+      window.setTimeout(() => this.seekPerformanceToTechnique('key-click', clickIndex + 1, level * 0.9), 10);
+      window.setTimeout(() => this.seekPerformanceToTechnique('jet-whistle', clickIndex + 2, level * 0.85), 24);
+      this.playContrabassStaccato(level, pointerX, pointerY);
+      return;
+    }
 
     this.playSlap(level, pointerX, pointerY);
     this.playContrabassStaccato(level, pointerX, pointerY);
@@ -471,23 +713,17 @@ export class SculptureAudio {
     this.lastCenterTechnique = now;
 
     const level = clamp(intensity, 0.35, 1);
+    const technique = CENTER_TECHNIQUE_MAP[side];
+    const markerIndex = this.centerTechniqueIndex;
+    this.centerTechniqueIndex += 1;
 
-    switch (side) {
-      case 'left':
-        this.playMultiphonicCluster(level, pointerX, pointerY);
-        break;
-      case 'right':
-        this.playSplitToneSqueak(level, pointerX, pointerY);
-        break;
-      case 'top':
-        this.playJetWhistle(level, pointerX, pointerY);
-        break;
-      case 'bottom':
-        this.playTongueStop(level);
-        break;
-      default:
-        break;
+    if (this.performanceLoaded) {
+      this.seekPerformanceToTechnique(technique, markerIndex, level);
+      this.performancePanner?.pan.setTargetAtTime(this.sideToPan(side), this.context.currentTime, 0.08);
+      return;
     }
+
+    this.playRecordedTechniqueFallback(technique, level, pointerX, pointerY);
   }
 
   getApproachSideFromVelocity(vx: number, vy: number, fallbackSpeed = 0): CenterApproachSide | null {
@@ -922,6 +1158,11 @@ export class SculptureAudio {
     this.disposed = true;
     this.enabled = false;
 
+    if (this.performancePauseTimer !== null) {
+      window.clearTimeout(this.performancePauseTimer);
+      this.performancePauseTimer = null;
+    }
+
     if (this.crackleNode) {
       this.crackleNode.stop();
       this.crackleNode.disconnect();
@@ -947,6 +1188,14 @@ export class SculptureAudio {
     }
 
     this.stopContrabassLoop();
+
+    if (this.performanceElement) {
+      this.performanceElement.pause();
+      this.performanceElement.src = '';
+      this.performanceElement = null;
+    }
+
+    this.performanceSource = null;
 
     if (this.context) {
       void this.context.close();

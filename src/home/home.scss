@@ -5,47 +5,68 @@
   min-height: 100dvh;
   flex-grow: 1;
   display: flex;
-  background:
-    radial-gradient(ellipse 90% 70% at 18% 12%, rgba($pearl-cream, 0.55) 0%, transparent 58%),
-    radial-gradient(ellipse 65% 50% at 88% 78%, rgba($pearl-champagne, 0.28) 0%, transparent 62%),
-    linear-gradient(168deg, $pearl-white 0%, $pearl-shell 52%, $pearl-cream 100%);
-  overflow: hidden;
+  flex-direction: column;
+  background-color: $photo-tan;
+  color: $home-text;
+  overflow-x: hidden;
+}
 
-  &::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background-image: radial-gradient(circle, rgba($pearl-deep, 0.04) 0.5px, transparent 0.6px);
-    background-size: phi(3) phi(3);
-    opacity: 0.45;
-    mask-image: radial-gradient(ellipse 85% 75% at 50% 42%, black 20%, transparent 100%);
+.home-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.home-background-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  animation: home-background-fade 1.4s ease both;
+}
+
+.home-background-overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  transition: background 1.4s ease;
+}
+
+.home-background--active .home-background-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba($photo-espresso, 0.3) 0%,
+    rgba($photo-tan-deep, 0.18) 42%,
+    rgba($photo-tan, 0.1) 100%
+  );
+}
+
+@keyframes home-background-fade {
+  from {
+    opacity: 0;
   }
 
-  &::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 42%, rgba($pearl-deep, 0.045) 100%);
+  to {
+    opacity: 1;
   }
 }
 
-.home-content {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: phi(3);
-  padding: phi(4) phi(5);
-  box-sizing: border-box;
+.home-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
   pointer-events: none;
-  -webkit-font-smoothing: antialiased;
+  background: linear-gradient(180deg, rgba($photo-espresso, 0.82) 0%, rgba($photo-espresso, 0.45) 72%, transparent 100%);
 
   a,
   button {
@@ -53,321 +74,477 @@
   }
 }
 
-.home-museum-header {
-  display: flex;
-  align-items: flex-start;
-  gap: phi(2);
-  width: 100%;
-  max-width: phi(9);
-  margin: 0 auto;
-  animation: home-reveal phi(0) cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-museum-identity {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: phi(-1);
-  flex-shrink: 0;
-  padding-left: phi(1);
-  padding-right: phi(-1);
-}
-
-.home-museum-mark {
-  position: absolute;
-  left: 0;
-  top: 0.55em;
-  width: phi(-2);
-  height: phi(-2);
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, $pearl-champagne, $secondary-color);
-  box-shadow: 0 0 phi(-2) rgba($secondary-color, 0.35);
-}
-
-.home-name {
-  color: $primary-color-dark !important;
-  font-family: 'DINNext', sans-serif !important;
-  font-weight: 300 !important;
-  font-size: $museum-display !important;
-  line-height: 1.12 !important;
-  letter-spacing: $museum-tracking-display;
-  text-transform: uppercase;
-  margin: 0 !important;
-  padding: 0.06em 0.1em 0.06em 0;
-  overflow: visible;
-}
-
-.home-roles {
-  color: rgba($primary-color-dark, 0.58) !important;
-  font-family: 'DINNext', sans-serif !important;
-  font-size: $museum-subhead !important;
-  letter-spacing: $museum-tracking-caption;
-  line-height: 1.55 !important;
-  margin: 0 !important;
-  max-width: 28em;
-}
-
-.home-museum-divider {
-  flex: 1;
-  height: 1px;
-  margin-top: phi(1);
-  background: linear-gradient(
-    90deg,
-    rgba($secondary-color, 0.42) 0%,
-    rgba($secondary-color, 0.12) 61.8%,
-    transparent 100%
-  );
-}
-
-.home-stage {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: phi(9);
-  margin: 0 auto;
-}
-
-.home-copy {
-  display: flex;
-  flex-direction: column;
-  gap: phi(2);
-  max-width: phi(7);
-}
-
-.home-plaque {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: phi(-1);
-  padding: 0;
-  background: none;
-  border: none;
-  box-shadow: none;
-  backdrop-filter: none;
-  animation: home-reveal phi(0) 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-plaque-eyebrow {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  color: rgba($secondary-color, 0.88);
-  font-family: 'DINNext', sans-serif;
-  font-size: $museum-eyebrow;
-  letter-spacing: $museum-tracking-eyebrow;
-  text-transform: none;
-}
-
-.home-title {
-  position: relative;
-  z-index: 1;
-  color: $primary-color-dark !important;
-  font-family: 'DINNext', sans-serif !important;
-  font-weight: 300 !important;
-  font-size: $museum-heading !important;
-  line-height: 1.25 !important;
-  letter-spacing: $museum-tracking-heading;
-  margin: phi(-2) 0 0 !important;
-  padding-bottom: phi(-1);
-  width: 100%;
-
-  &::after {
-    content: '';
-    display: block;
-    width: 61.8%;
-    height: 1px;
-    margin-top: phi(-1);
-    background: linear-gradient(90deg, rgba($secondary-color, 0.35), transparent);
-    border-radius: 999px;
-  }
-}
-
-.home-plaque-lead {
-  position: relative;
-  z-index: 1;
-  margin: phi(-1) 0 0 !important;
-  color: rgba($primary-color-dark, 0.68) !important;
-  font-family: 'DINNext', sans-serif !important;
-  font-size: $museum-body !important;
-  letter-spacing: 0.01em;
-  line-height: 1.65 !important;
-  max-width: 38em;
-}
-
-.home-sound-hint {
-  position: relative;
-  z-index: 1;
-  display: flex !important;
-  align-items: center;
-  gap: phi(-1);
-  color: rgba($secondary-color, 0.82) !important;
-  font-family: 'DINNext', sans-serif !important;
-  letter-spacing: $museum-tracking-caption;
-  text-transform: none;
-  font-size: $museum-caption !important;
-  font-style: normal;
-  margin-top: phi(-1) !important;
-  padding: 0;
-  background: none;
-  border: none;
-}
-
-.home-sound-pulse {
-  flex-shrink: 0;
-  width: phi(-2);
-  height: phi(-2);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, $pearl-champagne, $secondary-color);
-  box-shadow: 0 0 phi(-2) rgba($secondary-color, 0.35);
-  animation: home-sound-pulse 2.618s ease-in-out infinite;
-}
-
-.home-installation-label {
-  display: none;
-}
-
-.home-footer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: phi(9);
-  margin: 0 auto;
-  padding-top: phi(1);
-  animation: home-reveal phi(0) phi(-1) cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-footer-left {
-  display: flex;
-  align-items: center;
-}
-
-.home-social {
-  display: flex;
-  gap: phi(0);
-}
-
-.social-link {
+.home-menu-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: phi(1);
-  height: phi(1);
-  text-decoration: none;
-  color: rgba($secondary-color, 0.8);
-  border: 1px solid rgba($secondary-color, 0.28);
-  border-radius: 50%;
-  background: rgba($pearl-white, 0.45);
-  backdrop-filter: blur(6px);
-  transition:
-    color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.35s ease,
-    background-color 0.35s ease,
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.35s ease;
-
-  &:hover {
-    color: $primary-color-dark;
-    border-color: rgba($secondary-color, 0.55);
-    background: rgba($pearl-white, 0.88);
-    transform: translateY(calc(#{phi(-3)} * -1));
-    box-shadow: 0 phi(-2) phi(0) rgba($pearl-deep, 0.06);
-  }
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $home-text;
+  cursor: pointer;
 }
 
-.home-contact-link {
-  color: $secondary-color;
+.home-topbar-utils {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.home-topbar-link {
+  color: $home-text;
   font-family: 'DINNext', sans-serif;
   font-size: $museum-nav;
   letter-spacing: $museum-tracking-nav;
   text-transform: uppercase;
   text-decoration: none;
-  padding: phi(-2) phi(0);
-  border: 1px solid rgba($secondary-color, 0.32);
-  border-radius: 999px;
-  background: rgba($pearl-white, 0.5);
-  backdrop-filter: blur(8px);
-  transition:
-    color 0.35s ease,
-    border-color 0.35s ease,
-    background-color 0.35s ease,
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color 0.25s ease;
 
   &:hover {
-    color: $primary-color-dark;
-    border-color: rgba($primary-color-dark, 0.35);
-    background: rgba($pearl-white, 0.92);
-    transform: translateY(calc(#{phi(-3)} * -1));
+    color: $home-accent-bright;
   }
 }
 
-@keyframes home-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(phi(1));
-    filter: blur(4px);
-  }
+.home-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba($home-text, 0.85);
+  color: $home-text;
+  text-decoration: none;
+  transition: border-color 0.25s ease, color 0.25s ease;
 
-  to {
+  &:hover {
+    border-color: $home-accent;
+    color: $home-accent-bright;
+  }
+}
+
+.home-mark-text {
+  font-family: 'DINNext', sans-serif;
+  font-size: clamp(0.625rem, 0.9vw, 0.75rem);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.home-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem 2rem;
+  background: rgba($photo-espresso, 0.94);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+
+  &--open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+.home-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: min(100%, 24rem);
+}
+
+.home-menu-link {
+  color: $home-text;
+  font-family: 'DINNext', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
+
+  &:hover {
+    color: $home-accent-bright;
+  }
+}
+
+.home-hero {
+  position: relative;
+  z-index: 2;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1.5rem 4rem;
+  pointer-events: none;
+}
+
+.home-hero--intro {
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 5rem clamp(1.25rem, 4vw, 3rem) clamp(2.5rem, 6vh, 4rem);
+}
+
+.home-installation-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 24rem;
+  padding: 1.25rem 0 1.25rem 1.5rem;
+  border-left: 2px solid rgba($home-accent, 0.55);
+  background: rgba($photo-espresso, 0.55);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(1.25rem);
+  filter: blur(6px);
+  transition:
+    opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &--visible {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
   }
 }
 
+.home-installation-tag {
+  margin: 0;
+  color: $home-text-muted;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.08em;
+}
+
+.home-installation-title {
+  margin: 0;
+  color: $home-accent-bright;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-heading;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.home-installation-meta {
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba($home-text, 0.15);
+  color: $home-text-muted;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.home-installation-text {
+  margin: 0;
+  color: rgba($home-text, 0.88);
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-body;
+  line-height: 1.65;
+}
+
+.home-sound-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.home-sound-cta-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  border: 1px solid rgba($home-accent, 0.55);
+  border-radius: 50%;
+  background: rgba($photo-espresso, 0.35);
+  backdrop-filter: blur(8px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -0.45rem;
+    border: 1px solid rgba($home-accent, 0.18);
+    border-radius: 50%;
+    animation: home-sound-ring 2.8s ease-out infinite;
+  }
+}
+
+.home-sound-cta-pulse {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: $home-accent;
+  box-shadow: 0 0 0.75rem rgba($home-accent, 0.55);
+  animation: home-sound-pulse 2.4s ease-in-out infinite;
+}
+
+.home-sound-cta-label {
+  color: $home-accent-bright;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-nav;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 @keyframes home-sound-pulse {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba($secondary-color, 0.28);
+    box-shadow: 0 0 0 0 rgba($home-accent, 0.45);
   }
 
   50% {
     transform: scale(1.15);
-    box-shadow: 0 0 0 phi(-2) rgba($secondary-color, 0);
+    box-shadow: 0 0 0 0.5rem rgba($home-accent, 0);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .home-sound-pulse {
-    animation: none;
+@keyframes home-sound-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
   }
 
-  .home-museum-header,
-  .home-plaque,
-  .home-footer {
-    animation: none;
-    filter: none;
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
   }
+}
+
+.home-scroll-cue {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: $home-accent-bright;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  pointer-events: auto;
+  transition: opacity 0.25s ease;
+
+  &::after {
+    content: '↓';
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.home-feed {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: clamp(3rem, 8vw, 5rem);
+  padding: clamp(3rem, 8vw, 5rem) clamp(1.25rem, 4vw, 3rem) clamp(4rem, 10vw, 6rem);
+  background: rgba($photo-espresso, 0.68);
+  border-top: 1px solid rgba($photo-tan-light, 0.22);
+}
+
+.home-feed-intro {
+  max-width: 76rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.home-feed-role {
+  margin: 0;
+  color: $home-text-muted;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-subhead;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.home-feed-section {
+  max-width: 76rem;
+  margin: 0 auto;
+  width: 100%;
+  padding: 1.75rem clamp(1rem, 3vw, 2rem);
+  background: $home-panel;
+}
+
+.home-feed-heading {
+  margin: 0 0 1.75rem;
+  color: $home-text;
+  font-family: 'DINNext', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+}
+
+.home-feed-items {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.home-feed-item {
+  display: grid;
+  gap: 0.65rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba($photo-tan-light, 0.18);
+}
+
+.home-feed-tag {
+  margin: 0;
+  color: $home-text-muted;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.08em;
+}
+
+.home-feed-item-title {
+  margin: 0;
+  color: $home-text;
+  font-family: 'DINNext', sans-serif;
+  font-size: clamp(1.125rem, 2.2vw, 1.625rem);
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  max-width: 42rem;
+}
+
+.home-feed-item-meta {
+  margin: 0;
+  color: $home-text-muted;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-body;
+  letter-spacing: 0.01em;
+  line-height: 1.55;
+  max-width: 42rem;
+}
+
+.home-feed-item-text {
+  margin: 0;
+  color: rgba($home-text, 0.72);
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-body;
+  line-height: 1.65;
+  max-width: 42rem;
+}
+
+.home-feed-link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: $home-accent-bright;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: none;
+  transition: opacity 0.25s ease;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.home-footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2rem;
+  background: $photo-espresso;
+  border-top: 1px solid rgba($photo-tan-light, 0.18);
+}
+
+.home-social {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $home-text-muted;
+  text-decoration: none;
+  transition: color 0.25s ease;
+
+  &:hover {
+    color: $home-accent-bright;
+  }
+}
+
+.home-footer-note {
+  margin: 0;
+  color: $home-text-muted;
+  font-family: 'DINNext', sans-serif;
+  font-size: $museum-caption;
+  letter-spacing: 0.06em;
 }
 
 @media (max-width: 900px) {
-  .home-content {
-    padding: phi(3) phi(3);
-    gap: phi(2);
+  .home-topbar {
+    grid-template-columns: auto 1fr auto;
   }
 
-  .home-copy {
-    max-width: none;
+  .home-topbar-utils {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-topbar {
+    gap: 0.75rem;
+  }
+
+  .home-mark {
+    min-width: 6rem;
+    padding: 0.35rem 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .home-museum-header {
-    flex-wrap: wrap;
-    gap: phi(0);
-  }
-
-  .home-museum-divider {
-    display: none;
-  }
-
   .home-footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: phi(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-menu {
+    transition: none;
+  }
+
+  .home-sound-cta-pulse,
+  .home-sound-cta-ring::before {
+    animation: none;
+  }
+
+  .home-background-photo {
+    animation: none;
+  }
+
+  .home-installation-intro {
+    transition: none;
   }
 }

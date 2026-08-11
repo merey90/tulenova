@@ -9,9 +9,9 @@
 }
 
 .projects-backdrop {
-  background: rgba($color: #000000, $alpha: 0.8);
+  background: $at-panel;
   padding: 20px;
-  color: white;
+  color: $at-lime;
 }
 
 .project-item {

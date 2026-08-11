@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { goldenPower } from './goldenRatio';
+import { ringNodeTechnique, ringNodeTechniqueMarkerIndex, ExtendedTechnique } from './bassFlutePerformance';
 import { CONTRABASS_MAX_MIDI, CONTRABASS_MIN_MIDI } from './contrabassFluteSamples';
 import { pearlRgba } from './installationColors';
 import { CenterApproachSide, SculptureAudio } from './sculptureAudio';
@@ -15,6 +15,8 @@ interface Point3D {
   ring: number;
   phase: number;
   midi: number;
+  technique: ExtendedTechnique | null;
+  techniqueMarkerIndex: number;
 }
 
 interface Pointer {
@@ -36,7 +38,7 @@ const NODE_COUNT = 128;
 const RING_COUNT = 4;
 const RING_NODES = 32;
 const RING_RADIUS_BASE = 150;
-const RING_RADIUS_GROWTH = 0.68;
+const RING_RADIUS_STEP = 34;
 const SCULPTURE_SCALE = 1.65;
 const SCULPTURE_EXTENT_X = 280;
 const SCULPTURE_EXTENT_Y = 185;
@@ -44,12 +46,12 @@ const POINTER_REACH = 0.62;
 
 const createSculpture = (): Point3D[] => {
   const points: Point3D[] = [];
-  const golden = Math.PI * (3 - Math.sqrt(5));
+  const fibonacciAngle = Math.PI * (3 - Math.sqrt(5));
 
   for (let index = 0; index < NODE_COUNT; index += 1) {
     const t = index / (NODE_COUNT - 1);
     const inclination = Math.acos(1 - 2 * t);
-    const azimuth = golden * index;
+    const azimuth = fibonacciAngle * index;
     const radius = (118 + Math.sin(index * 0.7) * 18) * SCULPTURE_SCALE;
 
     points.push({
@@ -62,11 +64,13 @@ const createSculpture = (): Point3D[] => {
       ring: -1,
       phase: index * 0.31,
       midi: CONTRABASS_MIN_MIDI,
+      technique: null,
+      techniqueMarkerIndex: 0,
     });
   }
 
   for (let ring = 0; ring < RING_COUNT; ring += 1) {
-    const ringRadius = RING_RADIUS_BASE * SCULPTURE_SCALE * goldenPower(ring * RING_RADIUS_GROWTH);
+    const ringRadius = (RING_RADIUS_BASE + ring * RING_RADIUS_STEP) * SCULPTURE_SCALE;
     const tiltX = ring * 0.85 + 0.4;
     const tiltY = ring * 1.1 + 0.2;
 
@@ -86,6 +90,8 @@ const createSculpture = (): Point3D[] => {
         ring,
         phase: index * 0.22 + ring,
         midi: CONTRABASS_MIN_MIDI,
+        technique: ringNodeTechnique(ring, index),
+        techniqueMarkerIndex: ringNodeTechniqueMarkerIndex(ring, index),
       });
     }
   }
@@ -113,7 +119,7 @@ const assignContrabassPitches = (points: Point3D[]): void => {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-const CENTER_ZONE = goldenPower(-2);
+const CENTER_ZONE = 0.34;
 
 const directionFromSide = (side: CenterApproachSide): { dirX: number; dirY: number } => {
   switch (side) {
@@ -373,7 +379,16 @@ export const SculptureInstallation: React.FC = () => {
 
       if (closestNode && closestDistance < nodeHitRadius && pointer.active > 0.06 && !reducedMotion) {
         const pitchIntensity = clamp(1 - closestDistance / nodeHitRadius, 0.4, 1);
-        audio.triggerNodePitch(closestNode.midi, pitchIntensity, pointer.x);
+        if (closestNode.ring >= 0 && closestNode.technique) {
+          audio.triggerNodeTechnique(
+            closestNode.technique,
+            closestNode.techniqueMarkerIndex,
+            pitchIntensity,
+            pointer.x
+          );
+        } else {
+          audio.triggerNodePitch(closestNode.midi, pitchIntensity, pointer.x);
+        }
       }
 
       context.clearRect(0, 0, width, height);

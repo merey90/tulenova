@@ -1,10 +1,10 @@
 export const PEARL = {
-  wire: { r: 184, g: 176, b: 166 },
-  node: { r: 196, g: 188, b: 178 },
-  line: { r: 212, g: 204, b: 194 },
-  ring: { r: 200, g: 192, b: 182 },
-  highlight: { r: 252, g: 248, b: 242 },
-  glow: { r: 216, g: 208, b: 198 },
+  wire: { r: 58, g: 48, b: 40 },
+  node: { r: 74, g: 62, b: 52 },
+  line: { r: 92, g: 78, b: 66 },
+  ring: { r: 68, g: 56, b: 48 },
+  highlight: { r: 176, g: 252, b: 89 },
+  glow: { r: 176, g: 252, b: 89 },
 } as const;
 
 export const pearlRgba = (channel: keyof typeof PEARL, alpha: number): string => {

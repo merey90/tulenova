@@ -1,331 +1,71 @@
 @import '../assets/styles/variables';
 
 .home-sections {
-  position: relative;
-  width: 100%;
-  max-width: phi(6);
-  animation: home-reveal phi(0) phi(-2) cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.home-sections-orbit {
-  position: absolute;
-  top: phi(1);
-  left: 0;
-  width: 100%;
-  height: phi(2);
-  overflow: visible;
-  pointer-events: none;
-}
-
-.home-sections-path {
-  fill: none;
-  stroke: rgba($secondary-color, 0.18);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: phi(-2) phi(-1);
+  min-width: 0;
 }
 
 .home-sections-list {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: phi(-1);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-sections-item {
+  display: flex;
+  align-items: center;
+
+  &:not(:last-child)::after {
+    content: '';
+    width: 1px;
+    height: 0.75rem;
+    margin: 0 1rem;
+    background: rgba($home-text, 0.22);
+  }
 }
 
 .home-section-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: phi(-1);
-  flex: 1;
-  min-width: 0;
-  text-decoration: none;
-  animation: home-reveal phi(-1) cubic-bezier(0.22, 1, 0.36, 1) both;
-  transition:
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.35s ease,
-    border-color 0.35s ease;
-
-  &:hover,
-  &:focus-visible {
-    transform: translateY(calc(#{phi(-2)} * -1));
-
-    .home-section-node-core {
-      transform: translate(-50%, -50%) scale(1.25);
-      background: $primary-color-dark;
-    }
-
-    .home-section-node-ring {
-      transform: translate(-50%, -50%) scale(1.35);
-      border-color: rgba($secondary-color, 0.7);
-      opacity: 1;
-    }
-
-    .home-section-label {
-      color: $primary-color-dark;
-    }
-
-    .home-section-description {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  &:focus-visible {
-    outline: none;
-
-    .home-section-node-ring {
-      box-shadow: 0 0 0 1px rgba($secondary-color, 0.45);
-    }
-  }
-}
-
-.home-section-node {
-  position: relative;
-  width: phi(0);
-  height: phi(0);
-}
-
-.home-section-node-core {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: phi(-3);
-  height: phi(-3);
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, $pearl-champagne, $secondary-color);
-  transform: translate(-50%, -50%);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease;
-}
-
-.home-section-node-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: phi(0);
-  height: phi(0);
-  border: 1px solid rgba($secondary-color, 0.35);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.65;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, opacity 0.35s ease;
-}
-
-.home-section-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: phi(-3);
-  text-align: center;
-}
-
-.home-section-label {
-  display: inline-flex;
-  align-items: center;
-  color: rgba($secondary-color, 0.92);
+  color: $home-text;
   font-family: 'DINNext', sans-serif;
   font-size: $museum-nav;
   letter-spacing: $museum-tracking-nav;
   text-transform: uppercase;
-  transition: color 0.35s ease;
+  text-decoration: none;
   white-space: nowrap;
-}
+  transition: color 0.25s ease;
 
-.home-section-description {
-  color: rgba($primary-color-dark, 0.48);
-  font-family: 'DINNext', sans-serif;
-  font-size: $museum-nav-hint;
-  letter-spacing: 0.02em;
-  opacity: 0;
-  transform: translateY(phi(-2));
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  white-space: nowrap;
+  &:hover,
+  &:focus-visible {
+    color: $home-accent-bright;
+  }
+
+  &:focus-visible {
+    outline: 1px solid rgba($home-accent, 0.55);
+    outline-offset: 3px;
+  }
 }
 
 .home-sections--header {
-  width: auto;
-  max-width: phi(6);
-  flex-shrink: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  backdrop-filter: none;
-  box-shadow: none;
-  animation: home-reveal phi(-1) phi(-2) cubic-bezier(0.22, 1, 0.36, 1) both;
-
-  .home-sections-orbit {
-    display: none;
-  }
-
-  .home-sections-orbit--header {
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
-    width: 100%;
-    height: phi(1);
-    transform: translateY(-50%);
-    opacity: 0.55;
-  }
-
-  .home-sections-path {
-    stroke: rgba($secondary-color, 0.22);
-  }
-
-  .home-sections-list {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: phi(-3) phi(-2);
-  }
-
-  .home-section-link {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: phi(-3);
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-
-    &:hover,
-    &:focus-visible {
-      transform: translateY(calc(#{phi(-3)} * -1));
-      border-color: transparent;
-      background: transparent;
-
-      .home-section-description {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  }
-
-  .home-section-node {
-    width: phi(-1);
-    height: phi(-1);
-  }
-
-  .home-section-node-ring {
-    width: phi(-1);
-    height: phi(-1);
-  }
-
-  .home-section-copy {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: phi(-3);
-    text-align: right;
-  }
-
-  .home-section-description {
-    display: block;
-    font-size: $museum-nav-hint;
-    letter-spacing: 0.02em;
-    text-transform: none;
-    white-space: nowrap;
-  }
-}
-
-@keyframes home-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(phi(-1));
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  justify-self: start;
 }
 
 @media (max-width: 900px) {
-  .home-sections {
-    max-width: none;
-  }
-
   .home-sections--header {
-    max-width: none;
-    width: 100%;
-    padding: 0;
-
-    .home-sections-list {
-      justify-content: flex-start;
-    }
+    display: none;
   }
+}
 
-  .home-sections-orbit {
+@media (max-width: 420px) {
+  .home-sections-item:not(:last-child)::after {
     display: none;
   }
 
   .home-sections-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: phi(1) phi(2);
-  }
-
-  .home-section-link {
     flex-direction: column;
-    align-items: center;
-
-    &:hover,
-    &:focus-visible {
-      transform: translateY(calc(#{phi(-3)} * -1));
-    }
-  }
-
-  .home-section-copy {
-    align-items: center;
-    text-align: center;
-  }
-
-  .home-section-description {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (max-width: 520px) {
-  .home-sections--header {
-    .home-sections-list {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: phi(-2);
-    }
-
-    .home-section-link {
-      width: 100%;
-      justify-content: flex-start;
-    }
-  }
-
-  .home-sections-list {
-    grid-template-columns: 1fr;
-    gap: phi(1);
-  }
-
-  .home-section-link {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-
-    &:hover,
-    &:focus-visible {
-      transform: translateX(phi(-2));
-    }
-  }
-
-  .home-section-copy {
     align-items: flex-start;
-    text-align: left;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-sections,
-  .home-section-link {
-    animation: none;
+    gap: 0.625rem;
   }
 }

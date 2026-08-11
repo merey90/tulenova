@@ -10,9 +10,9 @@
 }
 
 .concerts-backdrop {
-  background: rgba($color: #000000, $alpha: 0.8);
+  background: $at-panel;
   padding: 40px;
-  color: white;
+  color: $at-lime;
   margin-bottom: 60px;
 }
 

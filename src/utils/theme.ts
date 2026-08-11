@@ -6,24 +6,24 @@ let theme = createTheme({
   },
   palette: {
     primary: {
-      light: '#9a9188',
-      main: '#5c564f',
-      dark: '#4a4540',
-      contrastText: '#f8f5f0',
+      light: '#35383b',
+      main: '#26292b',
+      dark: '#1a1c1e',
+      contrastText: '#b0fc59',
     },
     secondary: {
-      main: '#b8aea4',
-      light: '#e8e2d9',
-      dark: '#9a9188',
-      contrastText: '#4a4540',
+      main: '#b0fc59',
+      light: '#c9ff82',
+      dark: '#8fd945',
+      contrastText: '#26292b',
     },
     background: {
-      default: '#f8f5f0',
-      paper: '#f3efe8',
+      default: '#35383b',
+      paper: '#26292b',
     },
     text: {
-      primary: '#5c564f',
-      secondary: '#9a9188',
+      primary: '#b0fc59',
+      secondary: 'rgba(176, 252, 89, 0.72)',
     },
   },
 });

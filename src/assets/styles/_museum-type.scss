@@ -1,14 +1,15 @@
-$museum-display: clamp(1.75rem, 4.2vw, 2.875rem);
-$museum-subhead: clamp(0.875rem, 1.55vw, 1.0625rem);
-$museum-eyebrow: clamp(0.6875rem, 1.1vw, 0.8125rem);
-$museum-heading: clamp(1.125rem, 2.2vw, 1.625rem);
-$museum-body: clamp(0.9375rem, 1.35vw, 1.0625rem);
-$museum-caption: clamp(0.8125rem, 1.15vw, 0.9375rem);
-$museum-nav: clamp(0.6875rem, 1vw, 0.8125rem);
-$museum-nav-hint: clamp(0.625rem, 0.95vw, 0.75rem);
+$museum-display: clamp(1.875rem, 4.5vw, 3.125rem);
+$museum-subhead: clamp(0.8125rem, 1.4vw, 0.9375rem);
+$museum-eyebrow: clamp(0.6875rem, 1vw, 0.75rem);
+$museum-heading: clamp(1.375rem, 2.6vw, 2rem);
+$museum-body: clamp(0.9375rem, 1.3vw, 1.0625rem);
+$museum-caption: clamp(0.75rem, 1.05vw, 0.8125rem);
+$museum-nav: clamp(0.6875rem, 0.95vw, 0.75rem);
+$museum-label: clamp(0.625rem, 0.85vw, 0.6875rem);
 
-$museum-tracking-display: 0.1em;
-$museum-tracking-eyebrow: 0.14em;
-$museum-tracking-heading: 0.04em;
-$museum-tracking-nav: 0.12em;
-$museum-tracking-caption: 0.06em;
+$museum-tracking-display: 0.14em;
+$museum-tracking-eyebrow: 0.16em;
+$museum-tracking-heading: 0.02em;
+$museum-tracking-nav: 0.14em;
+$museum-tracking-caption: 0.08em;
+$museum-tracking-label: 0.12em;
