@@ -79,22 +79,26 @@ const feedSections = [
 export const Home: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [volume, setVolume] = useState(INSTALLATION_DEFAULT_VOLUME);
+  const [audioStarted, setAudioStarted] = useState(false);
   const startAudioRef = useRef<(() => Promise<void>) | null>(null);
   const { photoIndex, showIntro, showDescription } = useHomeBackground();
-  const showSoundOn = !showIntro || showDescription;
+  const showSoundOn = (!showIntro || showDescription) && !audioStarted;
+  const installationInteractive = !showIntro || audioStarted;
 
   const handleAudioReady = useCallback((startAudio: () => Promise<void>) => {
     startAudioRef.current = startAudio;
   }, []);
 
   const handleSoundOn = () => {
-    void startAudioRef.current?.();
+    void startAudioRef.current?.().then(() => {
+      setAudioStarted(true);
+    });
   };
 
   return (
     <div className="home-container">
       <HomeBackground photoIndex={photoIndex} />
-      <SculptureInstallation volume={volume} onAudioReady={handleAudioReady} />
+      <SculptureInstallation volume={volume} interactive={installationInteractive} onAudioReady={handleAudioReady} />
 
       <header className="home-topbar">
         <button
@@ -120,7 +124,10 @@ export const Home: React.FC = () => {
         </Link>
       </header>
 
-      <label className="home-volume-control" htmlFor="installation-volume">
+      <label
+        className={`home-volume-control${audioStarted ? ' home-volume-control--visible' : ''}`}
+        htmlFor="installation-volume"
+      >
         <span className="home-volume-icon" aria-hidden="true">
           {volume <= 0.001 ? <VolumeOffIcon fontSize="small" /> : <VolumeUpIcon fontSize="small" />}
         </span>
@@ -190,9 +197,16 @@ export const Home: React.FC = () => {
             <p className="home-installation-text">{installation.text}</p>
           </article>
         ) : (
-          <a href="#home-feed" className="home-scroll-cue">
-            Scroll down
-          </a>
+          <>
+            {!audioStarted && (
+              <p className="home-installation-hint" aria-live="polite">
+                Tap the sculpture to explore sound
+              </p>
+            )}
+            <a href="#home-feed" className="home-scroll-cue">
+              Scroll down
+            </a>
+          </>
         )}
       </section>
 

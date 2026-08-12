@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box, Tab, Tabs, useMediaQuery, useTheme } from '@material-ui/core';
 import { useParams, Link, Routes, Route } from 'react-router-dom';
 
 import { Photos } from './photos';
@@ -11,6 +11,8 @@ import './styles.scss';
 
 export const Media: React.FC = () => {
   const [tab, setTab] = useState('photos');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleTabChange = (event: React.ChangeEvent<Record<string, never>>, newTab: string) => {
     setTab(newTab);
@@ -22,10 +24,11 @@ export const Media: React.FC = () => {
         <Tabs
           value={tab}
           onChange={handleTabChange}
-          variant="fullWidth"
+          variant={isMobile ? 'scrollable' : 'fullWidth'}
+          scrollButtons={isMobile ? 'auto' : undefined}
           indicatorColor="secondary"
           textColor="secondary"
-          centered
+          centered={!isMobile}
           className="media-tabs"
         >
           <Tab component={Link} label="Photos" to="photos" value="photos" />

@@ -15,3 +15,14 @@
   color: $at-lime;
   margin-bottom: 60px;
 }
+
+@media (max-width: 600px) {
+  .bio-wrapper {
+    background-attachment: scroll;
+  }
+
+  .bio-backdrop {
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+}

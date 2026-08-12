@@ -4,8 +4,16 @@ interface ISoundCloud {
 
 export const SoundCloud: React.FC<ISoundCloud> = ({ link }) => {
   return (
-    <>
-      <iframe width="100%" height="500" scrolling="no" frameBorder="no" allow="autoplay" src={link} />
-    </>
+    <div className="soundcloud-embed">
+      <iframe
+        width="100%"
+        height="450"
+        scrolling="no"
+        frameBorder="no"
+        allow="autoplay"
+        src={link}
+        title="SoundCloud"
+      />
+    </div>
   );
 };

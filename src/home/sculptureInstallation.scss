@@ -10,3 +10,25 @@
   cursor: crosshair;
   background-color: transparent;
 }
+
+.sculpture-installation--passive {
+  pointer-events: none;
+  touch-action: pan-y;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .sculpture-installation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100dvh;
+    touch-action: pan-y;
+    cursor: default;
+  }
+
+  .sculpture-installation:not(.sculpture-installation--passive) {
+    touch-action: manipulation;
+  }
+}

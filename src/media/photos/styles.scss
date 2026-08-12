@@ -1,5 +1,15 @@
+.photo-grid {
+  margin: 0 !important;
+}
+
 .img-item {
-  height: calc(100vw / 4) !important;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .backdrop {
@@ -9,5 +19,6 @@
   img {
     max-width: 90vw;
     max-height: 90vh;
+    object-fit: contain;
   }
 }

@@ -1,5 +1,7 @@
 import { SoundCloud } from './soundcloud';
 
+import '../styles.scss';
+
 export const Audios: React.FC = () => {
   return (
     <>

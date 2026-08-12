@@ -1,9 +1,16 @@
 export const BASS_FLUTE_PERFORMANCE_URL = '/audio/bass-flute-performance.mp3';
 
-export const BASS_FLUTE_PERFORMANCE_DURATION_SEC = 676;
+export const BASS_FLUTE_PERFORMANCE_DURATION_SEC = 637;
+
+/** Applause / audience-noise bursts to skip during playback (seconds). */
+export const PERFORMANCE_EXCLUDED_RANGES: ReadonlyArray<[number, number]> = [
+  [604.5, 610.5],
+  [640.5, 646.5],
+  [652.5, 658.5],
+];
 
 /** Last second of flute-only performance material (applause trimmed from file). */
-export const PERFORMANCE_PLAYABLE_END_SEC = 676;
+export const PERFORMANCE_PLAYABLE_END_SEC = 637;
 
 /** Max sustained hover loop length per marker. */
 export const PERFORMANCE_HOVER_SEGMENT_SEC = 18;
@@ -44,7 +51,7 @@ export const PITCH_MARKERS: Record<number, PitchMarker> = {
 };
 
 const sanitizeMarkerTimes = (times: number[]): number[] =>
-  times.filter((timeSec) => timeSec < PERFORMANCE_PLAYABLE_END_SEC - 2);
+  times.filter((timeSec) => timeSec < PERFORMANCE_PLAYABLE_END_SEC - 2 && !isPerformanceExcludedTime(timeSec));
 
 export const TECHNIQUE_MARKERS: Record<ExtendedTechnique, number[]> = {
   'tongue-stop': sanitizeMarkerTimes([463.49, 544.16, 353.38, 18, 105, 195, 275, 365, 445, 525]),
@@ -89,16 +96,42 @@ export interface InstallationPointMarker {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+export const isPerformanceExcludedTime = (timeSec: number): boolean =>
+  PERFORMANCE_EXCLUDED_RANGES.some(([start, end]) => timeSec >= start && timeSec <= end);
+
+export const sanitizePerformanceTime = (timeSec: number): number => {
+  for (const [start, end] of PERFORMANCE_EXCLUDED_RANGES) {
+    if (timeSec >= start && timeSec <= end) {
+      return Math.max(0, start - 0.12);
+    }
+  }
+  return timeSec;
+};
+
 export const timeSecToPosition = (timeSec: number, durationSec = PERFORMANCE_PLAYABLE_END_SEC): number =>
   clamp(timeSec / durationSec, 0.02, 0.98);
 
-export const clampPerformanceTime = (timeSec: number): number => clamp(timeSec, 0, PERFORMANCE_PLAYABLE_END_SEC);
+export const clampPerformanceTime = (timeSec: number): number =>
+  sanitizePerformanceTime(clamp(timeSec, 0, PERFORMANCE_PLAYABLE_END_SEC));
 
 export const performancePositionToTimeSec = (position: number): number =>
   clampPerformanceTime(position * PERFORMANCE_PLAYABLE_END_SEC);
 
-export const hoverSegmentEndForTime = (timeSec: number): number =>
-  Math.min(clampPerformanceTime(timeSec) + PERFORMANCE_HOVER_SEGMENT_SEC, PERFORMANCE_PLAYABLE_END_SEC);
+export const hoverSegmentEndForTime = (timeSec: number): number => {
+  const start = clamp(timeSec, 0, PERFORMANCE_PLAYABLE_END_SEC);
+  let end = Math.min(start + PERFORMANCE_HOVER_SEGMENT_SEC, PERFORMANCE_PLAYABLE_END_SEC);
+
+  for (const [exStart, exEnd] of PERFORMANCE_EXCLUDED_RANGES) {
+    if ((start < exStart && end > exStart) || (start >= exStart && start <= exEnd)) {
+      end = Math.min(end, exStart - 0.12);
+    }
+    if (start < exEnd && end > exEnd && start < exStart) {
+      end = Math.min(end, exStart - 0.12);
+    }
+  }
+
+  return Math.max(start + 0.45, end);
+};
 
 export const midiToPerformancePosition = (midi: number): number => {
   const marker = PITCH_MARKERS[midi];

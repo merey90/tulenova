@@ -10,7 +10,7 @@ export interface IEvent {
 export const ConcertItem: React.FC<IEvent> = ({ date, title, place, link }) => (
   <Box className="concert-item" display="flex" justifyContent="space-between">
     <Grid container spacing={3}>
-      <Grid item xs={link ? 9 : 12}>
+      <Grid item xs={12} sm={link ? 9 : 12}>
         <Typography className="concert-item-title" gutterBottom variant="h6" align="left">
           {date}
         </Typography>
@@ -19,7 +19,7 @@ export const ConcertItem: React.FC<IEvent> = ({ date, title, place, link }) => (
           {title} | {place}
         </Typography>
       </Grid>
-      <Grid item xs={3} className="concert-item-button">
+      <Grid item xs={12} sm={3} className="concert-item-button">
         {link && (
           <Button variant="contained" color="secondary" component="a" href={link} target="_blank">
             Read more

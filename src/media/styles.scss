@@ -2,4 +2,33 @@
 
 .media-tabs a {
   color: $at-lime;
+  min-width: 5.5rem;
+}
+
+@media (max-width: 600px) {
+  .media-tabs {
+    .MuiTab-root {
+      min-height: 44px;
+      font-size: 0.8rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+}
+
+.soundcloud-embed {
+  width: 100%;
+  overflow: hidden;
+
+  iframe {
+    display: block;
+    width: 100%;
+    min-height: 300px;
+    border: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .soundcloud-embed iframe {
+    height: 350px;
+  }
 }

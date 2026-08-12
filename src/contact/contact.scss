@@ -19,3 +19,18 @@
   border: 1px solid rgba(176, 252, 89, 0.35);
   border-radius: 4px;
 }
+
+@media (max-width: 600px) {
+  .contact-container {
+    padding-top: 1.5rem;
+  }
+
+  .contact-form {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .contact-mail-link {
+    margin: 1rem 0 !important;
+  }
+}

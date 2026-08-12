@@ -11,6 +11,7 @@ import {
   clampPerformanceTime,
   ExtendedTechnique,
   hoverSegmentEndForTime,
+  isPerformanceExcludedTime,
   midiToPerformancePosition,
   PERFORMANCE_PLAYABLE_END_SEC,
   performancePositionToTimeSec,
@@ -327,6 +328,13 @@ export class SculptureAudio {
 
   private enforcePerformancePlaybackLimit(): void {
     if (!this.performanceElement) return;
+
+    if (isPerformanceExcludedTime(this.performanceElement.currentTime)) {
+      this.performanceElement.currentTime = clampPerformanceTime(this.performanceElement.currentTime);
+      if (this.hoverSustainActive) {
+        this.performanceElement.currentTime = this.hoverSegmentStartSec;
+      }
+    }
 
     if (this.performanceElement.currentTime > PERFORMANCE_PLAYABLE_END_SEC - 0.08) {
       this.performanceElement.pause();

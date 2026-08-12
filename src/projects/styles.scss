@@ -34,3 +34,19 @@
   padding-bottom: 15px;
   border-bottom: 1px solid $secondary-color;
 }
+
+@media (max-width: 600px) {
+  .projects-wrapper {
+    background-attachment: scroll;
+  }
+
+  .projects-backdrop {
+    padding: 1.25rem;
+  }
+
+  .project-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

@@ -170,9 +170,11 @@ const directionFromSide = (side: CenterApproachSide): { dirX: number; dirY: numb
 
 export const SculptureInstallation: React.FC<{
   volume?: number;
+  interactive?: boolean;
   onAudioReady?: (startAudio: () => Promise<void>) => void;
-}> = ({ volume = INSTALLATION_DEFAULT_VOLUME, onAudioReady }) => {
+}> = ({ volume = INSTALLATION_DEFAULT_VOLUME, interactive = true, onAudioReady }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const interactiveRef = useRef(interactive);
   const frameRef = useRef<number>();
   const pointsRef = useRef<Point3D[]>(createSculpture());
   const pointerRef = useRef<Pointer>({ x: 0, y: 0, active: 0, vx: 0, vy: 0 });
@@ -185,6 +187,7 @@ export const SculptureInstallation: React.FC<{
   const projectedScreenRef = useRef<Array<{ px: number; py: number; midi: number }>>([]);
 
   onAudioReadyRef.current = onAudioReady;
+  interactiveRef.current = interactive;
 
   useEffect(() => {
     audioRef.current?.setMasterVolume(volume);
@@ -206,6 +209,9 @@ export const SculptureInstallation: React.FC<{
     const pointer = pointerRef.current;
     const rotation = rotationRef.current;
     const centerImpact = centerImpactRef.current;
+    const touchState = { startX: 0, startY: 0, scrolling: false, pointerId: -1 };
+
+    const isTouchPointer = (event: PointerEvent) => event.pointerType === 'touch' || event.pointerType === 'pen';
 
     const setCanvasSize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -228,16 +234,41 @@ export const SculptureInstallation: React.FC<{
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      updatePointer(event.clientX, event.clientY, event.pointerType === 'touch' ? 1.4 : 1);
+      if (!interactiveRef.current) return;
+
+      if (isTouchPointer(event) && event.pointerId === touchState.pointerId) {
+        const dx = event.clientX - touchState.startX;
+        const dy = event.clientY - touchState.startY;
+
+        if (!touchState.scrolling && Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx) * 1.15) {
+          touchState.scrolling = true;
+          pointer.active *= 0.5;
+          audio.updateNodeHover(null, 0, 0, 0);
+          return;
+        }
+
+        if (touchState.scrolling) return;
+      }
+
+      updatePointer(event.clientX, event.clientY, isTouchPointer(event) ? 1.55 : 1);
     };
 
     const handlePointerDown = (event: PointerEvent) => {
-      updatePointer(event.clientX, event.clientY, 1.6);
+      if (!interactiveRef.current) return;
+
+      if (isTouchPointer(event)) {
+        touchState.startX = event.clientX;
+        touchState.startY = event.clientY;
+        touchState.scrolling = false;
+        touchState.pointerId = event.pointerId;
+      }
+
+      updatePointer(event.clientX, event.clientY, isTouchPointer(event) ? 1.75 : 1.6);
       void audio.ensureStarted().then(() => {
         if (event.pointerType === 'mouse') {
           audio.triggerMouseClickSounds(0.92, pointer.x, pointer.y);
         } else {
-          audio.triggerTouchBurst(0.85, pointer.x, pointer.y);
+          audio.triggerTouchBurst(0.9, pointer.x, pointer.y);
         }
 
         if (Math.hypot(pointer.x, pointer.y) < CENTER_ZONE) {
@@ -283,12 +314,18 @@ export const SculptureInstallation: React.FC<{
       audio.triggerCenterTechnique(side, strength, pointer.x, pointer.y);
     };
 
-    const handlePointerLeave = () => {
+    const handlePointerLeave = (event?: PointerEvent) => {
+      if (event && isTouchPointer(event) && event.pointerId === touchState.pointerId) {
+        touchState.scrolling = false;
+        touchState.pointerId = -1;
+      }
+
       pointer.active *= 0.92;
       audio.updateNodeHover(null, 0, 0, 0);
     };
 
     const handlePointerEnter = () => {
+      if (!interactiveRef.current) return;
       void audio.ensureStarted();
     };
 
@@ -299,6 +336,7 @@ export const SculptureInstallation: React.FC<{
     canvas.addEventListener('pointerdown', handlePointerDown);
     canvas.addEventListener('pointerup', handlePointerLeave);
     canvas.addEventListener('pointerleave', handlePointerLeave);
+    canvas.addEventListener('pointercancel', handlePointerLeave);
 
     const draw = () => {
       const rect = canvas.getBoundingClientRect();
@@ -306,7 +344,12 @@ export const SculptureInstallation: React.FC<{
       const height = rect.height;
       const centerX = width * 0.5;
       const centerY = height * 0.5;
-      const perspective = Math.max(width * 0.72, height * 0.82);
+      const isMobile = width < 768;
+      const mobileFit = isMobile ? Math.min(width / 390, height / 760, 1) : 1;
+      const horizontalStretch = HORIZONTAL_STRETCH * (isMobile ? 0.9 * mobileFit : 1);
+      const verticalStretch = VERTICAL_STRETCH * (isMobile ? 0.92 * mobileFit : 1);
+      const sculptureYOffset = isMobile ? height * 0.04 : 0;
+      const perspective = Math.max(width * (isMobile ? 0.68 : 0.72), height * (isMobile ? 0.76 : 0.82));
 
       timeRef.current += reducedMotion ? 0.004 : 0.012;
       const time = timeRef.current;
@@ -380,8 +423,8 @@ export const SculptureInstallation: React.FC<{
         const scale = perspective / (perspective + z2);
         projected.push({
           ...point,
-          px: centerX + x3 * scale * HORIZONTAL_STRETCH,
-          py: centerY + y3 * scale * VERTICAL_STRETCH,
+          px: centerX + x3 * scale * horizontalStretch,
+          py: centerY + sculptureYOffset + y3 * scale * verticalStretch,
           depth: z2,
           size: (point.ring >= 0 ? 2.4 : 3.1) * scale + pointer.active * 0.9 + sectorExpand * 4.8,
         });
@@ -407,7 +450,7 @@ export const SculptureInstallation: React.FC<{
         }
       }
 
-      const nodeHitRadius = NODE_HOVER_RADIUS + pointer.active * 16;
+      const nodeHitRadius = (isMobile ? 74 : NODE_HOVER_RADIUS) + pointer.active * (isMobile ? 22 : 16);
 
       if (!reducedMotion) {
         if (closestNode && closestDistance < nodeHitRadius) {
@@ -454,10 +497,11 @@ export const SculptureInstallation: React.FC<{
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
-      const linkDistance = 178 + centerImpact.strength * 108;
+      const linkDistance = (isMobile ? 148 : 178) + centerImpact.strength * (isMobile ? 88 : 108);
+      const linkStride = isMobile ? 2 : 1;
 
-      for (let i = 0; i < projected.length; i += 1) {
-        for (let j = i + 1; j < projected.length; j += 1) {
+      for (let i = 0; i < projected.length; i += linkStride) {
+        for (let j = i + 1; j < projected.length; j += linkStride) {
           const a = projected[i];
           const b = projected[j];
           const dx = a.px - b.px;
@@ -564,11 +608,19 @@ export const SculptureInstallation: React.FC<{
       canvas.removeEventListener('pointerdown', handlePointerDown);
       canvas.removeEventListener('pointerup', handlePointerLeave);
       canvas.removeEventListener('pointerleave', handlePointerLeave);
+      canvas.removeEventListener('pointercancel', handlePointerLeave);
       if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
       audio.dispose();
       audioRef.current = null;
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="sculpture-installation" aria-hidden="true" role="presentation" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`sculpture-installation${interactive ? '' : ' sculpture-installation--passive'}`}
+      aria-hidden="true"
+      role="presentation"
+    />
+  );
 };
